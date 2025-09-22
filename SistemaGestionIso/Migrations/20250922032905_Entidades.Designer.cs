@@ -12,7 +12,7 @@ using SistemaGestionIso;
 namespace SistemaGestionIso.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250914225432_Entidades")]
+    [Migration("20250922032905_Entidades")]
     partial class Entidades
     {
         /// <inheritdoc />
@@ -75,71 +75,6 @@ namespace SistemaGestionIso.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -246,11 +181,48 @@ namespace SistemaGestionIso.Migrations
                     b.Property<int>("NoConformidadId")
                         .HasColumnType("int");
 
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NoConformidadId");
 
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("AccionCorrectivas");
+                });
+
+            modelBuilder.Entity("SistemaGestionIso.Entidades.Auditoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AreaAuditada")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("FechaFin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaIni")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TipoAuditoria")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Auditorias");
                 });
 
             modelBuilder.Entity("SistemaGestionIso.Entidades.Clausula", b =>
@@ -304,9 +276,14 @@ namespace SistemaGestionIso.Migrations
                     b.Property<int>("RequisitoId")
                         .HasColumnType("int");
 
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RequisitoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Cumplimientos");
                 });
@@ -369,7 +346,7 @@ namespace SistemaGestionIso.Migrations
 
                     b.HasIndex("DocumentoSGIId");
 
-                    b.ToTable("DocumentoVersions");
+                    b.ToTable("DocumentoVersiones");
                 });
 
             modelBuilder.Entity("SistemaGestionIso.Entidades.Evidencia", b =>
@@ -392,11 +369,48 @@ namespace SistemaGestionIso.Migrations
                     b.Property<string>("RutaArchivo")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CumplimientoId");
 
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("Evidencias");
+                });
+
+            modelBuilder.Entity("SistemaGestionIso.Entidades.Hallazgo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AuditoriaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EvidenciaPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RequisitoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditoriaId");
+
+                    b.HasIndex("RequisitoId");
+
+                    b.ToTable("Hallazgos");
                 });
 
             modelBuilder.Entity("SistemaGestionIso.Entidades.NoConformidad", b =>
@@ -428,9 +442,14 @@ namespace SistemaGestionIso.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("NoConformidads");
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("NoConformidades");
                 });
 
             modelBuilder.Entity("SistemaGestionIso.Entidades.NormaIso", b =>
@@ -477,6 +496,93 @@ namespace SistemaGestionIso.Migrations
                     b.ToTable("Requisitos");
                 });
 
+            modelBuilder.Entity("SistemaGestionIso.Entidades.Usuario", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Celular")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PrimerApellido")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("PrimerNombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SegundoApellido")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("SegundoNombre")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -488,7 +594,7 @@ namespace SistemaGestionIso.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -497,7 +603,7 @@ namespace SistemaGestionIso.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -512,7 +618,7 @@ namespace SistemaGestionIso.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -521,7 +627,7 @@ namespace SistemaGestionIso.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -536,7 +642,22 @@ namespace SistemaGestionIso.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", "Usuario")
+                        .WithMany("AccionCorrectivas")
+                        .HasForeignKey("UsuarioId");
+
                     b.Navigation("NoConformidad");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("SistemaGestionIso.Entidades.Auditoria", b =>
+                {
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", "Usuario")
+                        .WithMany("Auditorias")
+                        .HasForeignKey("UsuarioId");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("SistemaGestionIso.Entidades.Clausula", b =>
@@ -557,6 +678,10 @@ namespace SistemaGestionIso.Migrations
                         .HasForeignKey("RequisitoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", null)
+                        .WithMany("Cumplimientos")
+                        .HasForeignKey("UsuarioId");
 
                     b.Navigation("Requisito");
                 });
@@ -580,7 +705,41 @@ namespace SistemaGestionIso.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", "Usuario")
+                        .WithMany("Evidencias")
+                        .HasForeignKey("UsuarioId");
+
                     b.Navigation("Cumplimiento");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("SistemaGestionIso.Entidades.Hallazgo", b =>
+                {
+                    b.HasOne("SistemaGestionIso.Entidades.Auditoria", "Auditoria")
+                        .WithMany("Hallazgos")
+                        .HasForeignKey("AuditoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SistemaGestionIso.Entidades.Requisito", "Requisito")
+                        .WithMany("Hallazgos")
+                        .HasForeignKey("RequisitoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Auditoria");
+
+                    b.Navigation("Requisito");
+                });
+
+            modelBuilder.Entity("SistemaGestionIso.Entidades.NoConformidad", b =>
+                {
+                    b.HasOne("SistemaGestionIso.Entidades.Usuario", "Usuario")
+                        .WithMany("NoConformidades")
+                        .HasForeignKey("UsuarioId");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("SistemaGestionIso.Entidades.Requisito", b =>
@@ -592,6 +751,11 @@ namespace SistemaGestionIso.Migrations
                         .IsRequired();
 
                     b.Navigation("Clausula");
+                });
+
+            modelBuilder.Entity("SistemaGestionIso.Entidades.Auditoria", b =>
+                {
+                    b.Navigation("Hallazgos");
                 });
 
             modelBuilder.Entity("SistemaGestionIso.Entidades.Clausula", b =>
@@ -622,6 +786,21 @@ namespace SistemaGestionIso.Migrations
             modelBuilder.Entity("SistemaGestionIso.Entidades.Requisito", b =>
                 {
                     b.Navigation("Cumplimientos");
+
+                    b.Navigation("Hallazgos");
+                });
+
+            modelBuilder.Entity("SistemaGestionIso.Entidades.Usuario", b =>
+                {
+                    b.Navigation("AccionCorrectivas");
+
+                    b.Navigation("Auditorias");
+
+                    b.Navigation("Cumplimientos");
+
+                    b.Navigation("Evidencias");
+
+                    b.Navigation("NoConformidades");
                 });
 #pragma warning restore 612, 618
         }

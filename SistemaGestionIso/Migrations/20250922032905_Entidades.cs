@@ -30,6 +30,11 @@ namespace SistemaGestionIso.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PrimerNombre = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    SegundoNombre = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    PrimerApellido = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    SegundoApellido = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Celular = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -64,23 +69,6 @@ namespace SistemaGestionIso.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DocumentoSGIs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "NoConformidads",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Descripcion = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    Origen = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    Severidad = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    FechaDeteccion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaCierre = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NoConformidads", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -204,7 +192,52 @@ namespace SistemaGestionIso.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DocumentoVersions",
+                name: "Auditorias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaIni = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AreaAuditada = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    TipoAuditoria = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    UsuarioId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Auditorias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Auditorias_AspNetUsers_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NoConformidades",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Descripcion = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Origen = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Severidad = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FechaDeteccion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaCierre = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UsuarioId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NoConformidades", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NoConformidades_AspNetUsers_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DocumentoVersiones",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -217,34 +250,11 @@ namespace SistemaGestionIso.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DocumentoVersions", x => x.Id);
+                    table.PrimaryKey("PK_DocumentoVersiones", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DocumentoVersions_DocumentoSGIs_DocumentoSGIId",
+                        name: "FK_DocumentoVersiones_DocumentoSGIs_DocumentoSGIId",
                         column: x => x.DocumentoSGIId,
                         principalTable: "DocumentoSGIs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AccionCorrectivas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NoConformidadId = table.Column<int>(type: "int", nullable: false),
-                    Accion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaCorrectiva = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaCierre = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Evidencia = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AccionCorrectivas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AccionCorrectivas_NoConformidads_NoConformidadId",
-                        column: x => x.NoConformidadId,
-                        principalTable: "NoConformidads",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -267,6 +277,35 @@ namespace SistemaGestionIso.Migrations
                         name: "FK_Clausulas_NormaIsos_NormaIsoId",
                         column: x => x.NormaIsoId,
                         principalTable: "NormaIsos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccionCorrectivas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NoConformidadId = table.Column<int>(type: "int", nullable: false),
+                    Accion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaCorrectiva = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaCierre = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Evidencia = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UsuarioId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccionCorrectivas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AccionCorrectivas_AspNetUsers_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AccionCorrectivas_NoConformidades_NoConformidadId",
+                        column: x => x.NoConformidadId,
+                        principalTable: "NoConformidades",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -300,13 +339,48 @@ namespace SistemaGestionIso.Migrations
                     RequisitoId = table.Column<int>(type: "int", nullable: false),
                     Estado = table.Column<int>(type: "int", nullable: false),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UsuarioId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cumplimientos", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Cumplimientos_AspNetUsers_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Cumplimientos_Requisitos_RequisitoId",
+                        column: x => x.RequisitoId,
+                        principalTable: "Requisitos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Hallazgos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AuditoriaId = table.Column<int>(type: "int", nullable: false),
+                    RequisitoId = table.Column<int>(type: "int", nullable: false),
+                    Tipo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EvidenciaPath = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hallazgos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Hallazgos_Auditorias_AuditoriaId",
+                        column: x => x.AuditoriaId,
+                        principalTable: "Auditorias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Hallazgos_Requisitos_RequisitoId",
                         column: x => x.RequisitoId,
                         principalTable: "Requisitos",
                         principalColumn: "Id",
@@ -322,11 +396,17 @@ namespace SistemaGestionIso.Migrations
                     CumplimientoId = table.Column<int>(type: "int", nullable: false),
                     RutaArchivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NombreArchivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaSubida = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    FechaSubida = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsuarioId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Evidencias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Evidencias_AspNetUsers_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Evidencias_Cumplimientos_CumplimientoId",
                         column: x => x.CumplimientoId,
@@ -339,6 +419,11 @@ namespace SistemaGestionIso.Migrations
                 name: "IX_AccionCorrectivas_NoConformidadId",
                 table: "AccionCorrectivas",
                 column: "NoConformidadId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccionCorrectivas_UsuarioId",
+                table: "AccionCorrectivas",
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -380,6 +465,11 @@ namespace SistemaGestionIso.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Auditorias_UsuarioId",
+                table: "Auditorias",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Clausulas_NormaIsoId",
                 table: "Clausulas",
                 column: "NormaIsoId");
@@ -390,14 +480,39 @@ namespace SistemaGestionIso.Migrations
                 column: "RequisitoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DocumentoVersions_DocumentoSGIId",
-                table: "DocumentoVersions",
+                name: "IX_Cumplimientos_UsuarioId",
+                table: "Cumplimientos",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocumentoVersiones_DocumentoSGIId",
+                table: "DocumentoVersiones",
                 column: "DocumentoSGIId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Evidencias_CumplimientoId",
                 table: "Evidencias",
                 column: "CumplimientoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Evidencias_UsuarioId",
+                table: "Evidencias",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Hallazgos_AuditoriaId",
+                table: "Hallazgos",
+                column: "AuditoriaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Hallazgos_RequisitoId",
+                table: "Hallazgos",
+                column: "RequisitoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NoConformidades_UsuarioId",
+                table: "NoConformidades",
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Requisitos_ClausulaId",
@@ -427,19 +542,19 @@ namespace SistemaGestionIso.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "DocumentoVersions");
+                name: "DocumentoVersiones");
 
             migrationBuilder.DropTable(
                 name: "Evidencias");
 
             migrationBuilder.DropTable(
-                name: "NoConformidads");
+                name: "Hallazgos");
+
+            migrationBuilder.DropTable(
+                name: "NoConformidades");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "DocumentoSGIs");
@@ -448,7 +563,13 @@ namespace SistemaGestionIso.Migrations
                 name: "Cumplimientos");
 
             migrationBuilder.DropTable(
+                name: "Auditorias");
+
+            migrationBuilder.DropTable(
                 name: "Requisitos");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Clausulas");

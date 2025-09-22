@@ -9,7 +9,8 @@
         public DateTime FechaCorrectiva { get; set; }
         public DateTime FechaCierre { get; set; }
         public string? Evidencia { get; set; }
-
+        public string? UsuarioId { get; set; }
+        public Usuario? Usuario { get; set; }
         //Falta usuario que realiza la accion correctiva
     }
 }

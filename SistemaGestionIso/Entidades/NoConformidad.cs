@@ -16,9 +16,12 @@ namespace SistemaGestionIso.Entidades
         public string Severidad { get; set; } // Baja, Media, Alta
         public DateTime FechaDeteccion { get; set; }
         public DateTime? FechaCierre { get; set; }
+        public string? UsuarioId { get; set; }
+        public Usuario? Usuario { get; set; }
 
         public List<AccionCorrectiva> AccionCorrectivas { get; set; }
+        
 
-        //Agregar usuario que detecta y cierra la no conformidad
+       
     }
 }
