@@ -12,7 +12,7 @@ using SistemaGestionIso;
 namespace SistemaGestionIso.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250922032905_Entidades")]
+    [Migration("20251003053803_Entidades")]
     partial class Entidades
     {
         /// <inheritdoc />
@@ -459,6 +459,9 @@ namespace SistemaGestionIso.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()

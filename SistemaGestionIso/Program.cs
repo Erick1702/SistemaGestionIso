@@ -24,14 +24,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //Identity
 builder.Services.AddAuthentication();
 
-builder.Services.AddIdentity<Usuario, IdentityRole>(opciones =>
+builder.Services.AddIdentity<Usuario, Rol>(opciones =>
 {
     opciones.SignIn.RequireConfirmedAccount = false;
     opciones.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
     opciones.Lockout.MaxFailedAccessAttempts = 3;
     opciones.Lockout.AllowedForNewUsers = true;
 }
-).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+).AddRoles<Rol>()
+ .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 ///
 

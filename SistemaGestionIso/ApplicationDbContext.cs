@@ -4,7 +4,7 @@ using SistemaGestionIso.Entidades;
 
 namespace SistemaGestionIso
 {
-    public class ApplicationDbContext : IdentityDbContext<Usuario>
+    public class ApplicationDbContext : IdentityDbContext<Usuario, Rol, string>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
