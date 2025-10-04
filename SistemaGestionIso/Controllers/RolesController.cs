@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SistemaGestionIso.Entidades;
 using SistemaGestionIso.Models;
 
@@ -19,13 +20,15 @@ namespace SistemaGestionIso.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var roles = _roleManager.Roles
-                .Select(r => new RolViewModel
-                {
-                    RolId = r.Id,
-                    Nombre = r.Name!,
-                    Descripcion = r.Descripcion
-                }).ToList();
+            var roles = await _roleManager.Roles.ToListAsync();
+
+            var viewModel = roles.Select(r => new RolViewModel
+            {
+                RolId = r.Id,
+                Nombre = r.Name
+                
+            }).ToList();
+           
 
             return View(roles);
         }
@@ -45,7 +48,7 @@ namespace SistemaGestionIso.Controllers
         {
             if (ModelState.IsValid)
             {
-                var rol = new Rol { Name = model.Nombre, Descripcion = model.Descripcion };
+                var rol = new Rol { Name = model.Nombre };
                 var result = await _roleManager.CreateAsync(rol);
 
                 if (result.Succeeded)
@@ -69,8 +72,8 @@ namespace SistemaGestionIso.Controllers
             var model = new RolViewModel
             {
                 RolId = rol.Id,
-                Nombre = rol.Name!,
-                Descripcion = rol.Descripcion
+                Nombre = rol.Name
+                
             };
 
             return View(model);
@@ -90,7 +93,7 @@ namespace SistemaGestionIso.Controllers
                 if (rol == null) return NotFound();
 
                 rol.Name = model.Nombre;
-                rol.Descripcion = model.Descripcion;
+                
 
                 var result = await _roleManager.UpdateAsync(rol);
 
@@ -116,8 +119,8 @@ namespace SistemaGestionIso.Controllers
             var model = new RolViewModel
             {
                 RolId = rol.Id,
-                Nombre = rol.Name!,
-                Descripcion = rol.Descripcion
+                Nombre = rol.Name
+                
             };
 
             return View(model);
@@ -138,7 +141,7 @@ namespace SistemaGestionIso.Controllers
                     foreach (var error in result.Errors)
                         ModelState.AddModelError("", error.Description);
 
-                    return View(new RolViewModel { RolId = rol.Id, Nombre = rol.Name!, Descripcion = rol.Descripcion });
+                    return View(new RolViewModel { RolId = rol.Id, Nombre = rol.Name });
                 }
             }
             return RedirectToAction(nameof(Index));

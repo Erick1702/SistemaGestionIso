@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.SqlServer.Server;
 using SistemaGestionIso.Entidades;
 using SistemaGestionIso.Models;
+using SistemaGestionIso.Servicios;
+
 
 namespace SistemaGestionIso.Controllers
 {
@@ -17,84 +19,96 @@ namespace SistemaGestionIso.Controllers
         }
 
 
-        [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Detalle(int id)
         {
-            //return View();
-
-            var normaIsos = await _context.NormaIsos.ToListAsync();
-
-            var viewModel = normaIsos.Select(n => new NormaIsoViewModel
+            var norma = await _context.NormaIsos
+                .FirstOrDefaultAsync(n => n.Id == id);
+            if (norma is null)
             {
-                NormaISOId = n.Id,
-                Nombre = n.Nombre,
-                Version = n.Version,
-                Descripcion = n.Descripcion
-            }).ToList();
-            return View(viewModel);
-
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+            
+            var modelo = new NormaIsoDetalleViewModel
+            {
+                Id = norma.Id,
+                Nombre = norma.Nombre,
+                Version = norma.Version,
+                Descripcion = norma.Descripcion
+            };
+            return View(modelo);
         }
 
-        //[AllowAnonymous]
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.NormaIsos.ToListAsync());
-        //}
 
-        // GET: Normas/Details/5
-        [AllowAnonymous]
-        public async Task<IActionResult> Details(int? id)
+        [HttpGet]
+        [Authorize(Roles = Constantes.RolAdministrador)]
+        public async Task<IActionResult> Listado(string? mensaje = null)
         {
-            if (id == null) return NotFound();
+            var normasIso = await _context.NormaIsos.Select(x => new NormaIsoViewModel
+            {
+                NormaISOId = x.Id,
+                Nombre = x.Nombre, //Significa que no es null
+                Version = x.Version,
+                Descripcion = x.Descripcion
+            }).ToListAsync();
 
-            var norma = await _context.NormaIsos.FirstOrDefaultAsync(m => m.Id == id);
-            if (norma == null) return NotFound();
+            var modelo = new NormaIsoListadoViewModel();
 
-            return View(norma);
+            modelo.NormasIso = normasIso;
+            modelo.Mensaje = mensaje;
+            return View(modelo);
         }
 
-        // GET: Normas/Create
-        [AllowAnonymous]
-        public IActionResult Create()
+
+        [HttpGet]
+        public IActionResult Crear()
         {
             return View();
         }
 
-        // POST: Normas/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        public async Task<IActionResult> Create(NormaIsoViewModel model)
+        [Authorize(Roles =$"{Constantes.RolAdministrador}, {Constantes.RolEncargadoSig}")]
+        public async Task<IActionResult> Crear(NormaIsoCrearViewModel modelo)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var norma = new NormaIso
-                {
-                    Nombre = model.Nombre,
-                    Version = model.Version,
-                    Descripcion = model.Descripcion
-                };
-
-                _context.Add(norma);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(modelo);
             }
-            return View(model);
+
+            var normaiso = new NormaIso
+            {
+                Nombre = modelo.Nombre,
+                Version = modelo.Version,
+                Descripcion = modelo.Descripcion
+            };
+
+            _context.Add(normaiso);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Detalle", new {id = normaiso.Id });
         }
 
 
+
+
+
+
         // GET: Normas/Edit/5
-        [AllowAnonymous]
-        public async Task<IActionResult> Edit(int? id)
+        [HttpGet]
+        [Authorize(Roles =$"{Constantes.RolAdministrador},{Constantes.RolEncargadoSig}")]
+        public async Task<IActionResult> Editar(int? id)
         {
-            if (id == null) return NotFound();
+            
 
-            var norma = await _context.NormaIsos.FindAsync(id);
-            if (norma == null) return NotFound();
-
-            var model = new NormaIsoViewModel
+            var norma = await _context.NormaIsos.FirstOrDefaultAsync(x => x.Id == id);
+            if (norma is null)
             {
-                NormaISOId = norma.Id,
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            var model = new NormaIsoEditarViewModel
+            {
+                Id = norma.Id,
                 Nombre = norma.Nombre,
                 Version = norma.Version,
                 Descripcion = norma.Descripcion
@@ -106,26 +120,28 @@ namespace SistemaGestionIso.Controllers
         // POST: Normas/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        public async Task<IActionResult> Edit(int id, NormaIsoViewModel model)
+        [Authorize(Roles = $"{Constantes.RolAdministrador},{Constantes.RolEncargadoSig}")]
+        public async Task<IActionResult> Editar ( NormaIsoEditarViewModel modelo)
         {
-            if (id != model.NormaISOId) return NotFound();
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var norma = await _context.NormaIsos.FindAsync(id);
-                if (norma == null) return NotFound();
-
-                norma.Nombre = model.Nombre;
-                norma.Version = model.Version;
-                norma.Descripcion = model.Descripcion;
-
-                _context.Update(norma);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                return View(modelo);
             }
-            return View(model);
+
+            var norma = await _context.NormaIsos.FirstOrDefaultAsync(x => x.Id == modelo.Id);
+
+            if (norma is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            norma.Nombre = modelo.Nombre;
+            norma.Version = modelo.Version;
+            norma.Descripcion = modelo.Descripcion;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Detalle", new { id = norma.Id });
         }
 
 

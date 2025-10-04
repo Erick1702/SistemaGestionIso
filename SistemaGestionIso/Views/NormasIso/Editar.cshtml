@@ -1,0 +1,36 @@
+﻿@model NormaIsoEditarViewModel
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+	ViewData["Title"] = "Editar Norma ISO";
+}
+<h1> Editar Norma ISO</h1>
+<h5>
+	Aqui podemos realizar la edicion de las Normas ISO</h5>
+
+<div asp-validation-summary="ModelOnly" class="text-danger" ></div>
+
+<form asp-action="Editar">
+	<div class="mb-3">
+		<label asp-for="Nombre" class="form-label"></label>
+		<input asp-for="Nombre" type="text" class="form-control" />
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="Version" class="form-label"></label>
+		<input asp-for="Version" class="form-control" type="text" />
+	</div>
+
+	<div>
+		<label asp-for="Descripcion" class="form-label"></label>
+		<input asp-for="Descripcion" class="form-control" type="text" />
+	</div>
+
+	<button type="submit" class="btn btn-primary">
+		Guardar
+	</button>
+	<a asp-action="Listado" class="btn btn-link">Cancelar</a>
+
+</form>

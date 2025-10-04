@@ -4,13 +4,14 @@ using SistemaGestionIso.Entidades;
 
 namespace SistemaGestionIso
 {
-    public class ApplicationDbContext : IdentityDbContext<Usuario, Rol, string>
+    public class ApplicationDbContext : IdentityDbContext<Usuario>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
 
         }
 
+        protected ApplicationDbContext() { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

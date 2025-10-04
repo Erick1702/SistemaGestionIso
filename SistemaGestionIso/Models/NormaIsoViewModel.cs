@@ -19,6 +19,6 @@ namespace SistemaGestionIso.Models
 
         [StringLength(500)]
         [Display(Name = "Descripción")]
-        public string? Descripcion { get; set; }
+        public string Descripcion { get; set; }
     }
 }

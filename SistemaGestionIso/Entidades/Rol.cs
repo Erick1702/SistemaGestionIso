@@ -6,7 +6,7 @@ namespace SistemaGestionIso.Entidades
     public class Rol: IdentityRole
     {
         
-        [StringLength(150)]
-        public string? Descripcion { get; set; }
+        //[StringLength(150)]
+        //public string? Descripcion { get; set; }
     }
 }

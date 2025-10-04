@@ -11,8 +11,8 @@ namespace SistemaGestionIso.Models
         [Display(Name = "Nombre del Rol")]
         public string Nombre { get; set; } = string.Empty;
 
-        [StringLength(250)]
-        [Display(Name = "Descripción")]
-        public string? Descripcion { get; set; }
+        //[StringLength(250)]
+        //[Display(Name = "Descripción")]
+        //public string? Descripcion { get; set; }
     }
 }

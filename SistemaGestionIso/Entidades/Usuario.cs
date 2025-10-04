@@ -10,16 +10,16 @@ namespace SistemaGestionIso.Entidades
         public string PrimerNombre { get; set; }
         
         [StringLength(150)]
-        public string? SegundoNombre { get; set; } = "";
+        public string SegundoNombre { get; set; } = "";
         [Required]
         [StringLength(150)]
         public string PrimerApellido { get; set; }
         [Required]
         [StringLength(150)]
         public string SegundoApellido { get; set; }
-        public string NombreCompleto => $"{PrimerNombre} {SegundoNombre} {PrimerApellido} {SegundoApellido}";
+        public string NombreCompleto  => $"{PrimerNombre} {SegundoNombre} {PrimerApellido} {SegundoApellido}";
 
-        public string? Celular { get; set; }= "";
+        public string Celular { get; set; }= "";
 
         public List<Cumplimiento> Cumplimientos { get; set; }
         public List<Evidencia> Evidencias { get; set; }
