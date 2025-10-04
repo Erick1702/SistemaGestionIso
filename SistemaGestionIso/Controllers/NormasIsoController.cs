@@ -47,7 +47,7 @@ namespace SistemaGestionIso.Controllers
             var normasIso = await _context.NormaIsos.Select(x => new NormaIsoViewModel
             {
                 NormaISOId = x.Id,
-                Nombre = x.Nombre, //Significa que no es null
+                Nombre = x.Nombre,
                 Version = x.Version,
                 Descripcion = x.Descripcion
             }).ToListAsync();

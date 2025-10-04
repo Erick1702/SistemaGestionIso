@@ -12,7 +12,6 @@ namespace SistemaGestionIso.Entidades
         [Required]
         public string Version { get; set; }
         public string? Descripcion { get; set; }
-
         public List<Clausula> Clausulas { get; set; }
     }
 }

@@ -1,7 +1,42 @@
 ﻿@model ClausulaCrearViewModel
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
-	ViewData["Title"] = "Crear Cláusula";
+    ViewData["Title"] = "Crear Cláusula";
 }
+
+<h1>Crear Nueva Cláusula</h1>
+
+<form asp-action="Crear" method="post">
+    @* Campo oculto que envía el ID de la norma *@
+    <input type="hidden" asp-for="NormaIsoId" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <!-- Mostrar el nombre de la Norma ISO (solo lectura) -->
+    <div class="mb-3">
+        <label class="form-label">Norma ISO</label>
+        <input type="text" class="form-control" value="@Model.NombreNormaIso" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Codigo" class="form-label"></label>
+        <input asp-for="Codigo" class="form-control" placeholder="Ej. 4.1" />
+        <span asp-validation-for="Codigo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Descripcion" class="form-label"></label>
+        <input asp-for="Descripcion" class="form-control" />
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Orden" class="form-label"></label>
+        <input asp-for="Orden" class="form-control" type="number" />
+        <span asp-validation-for="Orden" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-action="Listado" asp-route-id="@Model.NormaIsoId" class="btn btn-secondary">Cancelar</a>
+</form>
+

@@ -32,6 +32,7 @@ namespace SistemaGestionIso.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Registro(RegistroViewModel modelo)
         {
             if (!ModelState.IsValid)
@@ -105,7 +106,7 @@ namespace SistemaGestionIso.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = Constantes.RolAdministrador)]
+        //[Authorize(Roles = Constantes.RolAdministrador)]
         public async Task<IActionResult> Listado(string? mensaje = null)
         {
             var usuarios = await context.Users.Select(x => new UsuarioViewModel
@@ -123,7 +124,7 @@ namespace SistemaGestionIso.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = Constantes.RolAdministrador)]
+        //[Authorize(Roles = Constantes.RolAdministrador)]
         public async Task<IActionResult> RolesUsuario(string usuarioId)
         {
 
@@ -156,7 +157,7 @@ namespace SistemaGestionIso.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = Constantes.RolAdministrador)]
+        //[Authorize(Roles = Constantes.RolAdministrador)]
         public async Task<IActionResult> EditarRoles(EditarRolesViewModel modelo)
         {
             var usuario = await userManager.FindByIdAsync(modelo.UsuarioId);

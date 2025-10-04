@@ -1,72 +1,60 @@
 ﻿@model RegistroViewModel
 @{
-    ViewData["Title"] = "Registro";
+	ViewData["Title"] = "Registro";
 }
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="col-md-6">
-        <div class="card shadow-lg border-0 rounded-4">
-            <div class="card-header bg-success text-white text-center rounded-top-4">
-                <h3 class="mb-0">Registro de Usuario</h3>
-            </div>
-            <div class="card-body p-4">
-                <form asp-action="Registro">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<h1>Registro de Usuario</h1>
 
-                    <div class="row g-3">
-                        <div class="col-md-6 form-floating">
-                            <input asp-for="PrimerNombre" class="form-control" placeholder=" " />
-                            <label asp-for="PrimerNombre"></label>
-                            <span asp-validation-for="PrimerNombre" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-6 form-floating">
-                            <input asp-for="SegundoNombre" class="form-control" placeholder=" " />
-                            <label asp-for="SegundoNombre"></label>
-                            <span asp-validation-for="SegundoNombre" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-6 form-floating">
-                            <input asp-for="PrimerApellido" class="form-control" placeholder=" " />
-                            <label asp-for="PrimerApellido"></label>
-                            <span asp-validation-for="PrimerApellido" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-6 form-floating">
-                            <input asp-for="SegundoApellido" class="form-control" placeholder=" " />
-                            <label asp-for="SegundoApellido"></label>
-                            <span asp-validation-for="SegundoApellido" class="text-danger"></span>
-                        </div>
-                    </div>
+<div class="card">
+	<div class="card-body">
+		<form asp-action="Registro">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                    <div class="form-floating mb-3 mt-3">
-                        <input asp-for="Email" class="form-control" placeholder=" " />
-                        <label asp-for="Email"></label>
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+			<div class="mb-3">
+				<label asp-for="PrimerNombre" class="form-label"></label>
+				<input asp-for="PrimerNombre" class="form-control" />
+				<span asp-validation-for="PrimerNombre" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="SegundoNombre" class="form-label"></label>
+				<input asp-for="SegundoNombre" class="form-control" />
+				<span asp-validation-for="SegundoNombre" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="PrimerApellido" class="form-label"></label>
+				<input asp-for="PrimerApellido" class="form-control" />
+				<span asp-validation-for="PrimerApellido" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="SegundoApellido" class="form-label"></label>
+				<input asp-for="SegundoApellido" class="form-control" />
+				<span asp-validation-for="SegundoApellido" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Email" class="form-label"></label>
+				<input asp-for="Email" class="form-control" />
+				<span asp-validation-for="Email" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Password" class="form-label"></label>
+				<input asp-for="Password" class="form-control" type="password" />
+				<span asp-validation-for="Password" class="text-danger"></span>
+			</div>
+			@* <div class="mb-3">
+				<label asp-for="ConfirmPassword" class="form-label"></label>
+				<input asp-for="ConfirmPassword" class="form-control" type="password" />
+				<span asp-validation-for="ConfirmPassword" class="text-danger"></span> *@
 
-                    <div class="form-floating mb-3">
-                        <input asp-for="Password" type="password" class="form-control" placeholder=" " />
-                        <label asp-for="Password"></label>
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
+			<button type="submit" class="btn btn-primary">Registrar</button>
+			<a asp-action="Login" class="btn btn-link">¿Ya tienes una cuenta? Inicia sesión</a>
 
-                    @* Si quieres usar confirmación de contraseña, habilita este bloque *@
-                    @* 
-                    <div class="form-floating mb-3">
-                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder=" " />
-                        <label asp-for="ConfirmPassword"></label>
-                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                    </div>
-                    *@
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success btn-lg">Registrar</button>
-                        <a asp-action="Login" class="btn btn-outline-secondary btn-lg">¿Ya tienes una cuenta? Inicia sesión</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+		</form>
+
+	</div>
+
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+	<partial name="_ValidationScriptsPartial" />
 }

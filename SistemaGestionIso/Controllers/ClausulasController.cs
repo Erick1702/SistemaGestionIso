@@ -45,6 +45,12 @@ namespace SistemaGestionIso.Controllers
                 })
                 .ToListAsync();
 
+            if (clausulas == null || clausulas.Count == 0)
+            {
+                // No hay cláusulas, vamos a crear la primera
+                return RedirectToAction("Crear", new { normaIsoId = Id });
+            }
+
             var viewModel = new ClausulaListadoViewModel
             {
                 Clausulas = clausulas,
@@ -56,39 +62,39 @@ namespace SistemaGestionIso.Controllers
             ViewBag.VersionNormaIso = normaIso.Version;
 
             return View(viewModel);
-
-
-
-            //var clausula = await context.Clausulas.Where(x => x.NormaIsoId == normaIsoId)
-            //    .Include(x => x.NormaIso)
-            //    .Select(x => new ClausulaViewModel
-            //{
-            //    Id = x.Id,
-            //    Codigo = x.Codigo,
-            //    Descripcion = x.Descripcion,
-            //    NormaIsoId = x.NormaIsoId,
-            //    NombreNormaIso = x.NormaIso  != null ? x.NormaIso.Nombre : "",
-            //        Orden = x.Orden
-
-            //    }).ToListAsync();
-
-            //var modelo = new ClausulaListadoViewModel
-            //{
-            //    Clausulas = clausula,
-            //    Mensaje = mensaje
-            //};
-
-            //ViewBag.NormaIsoId = normaIsoId;
-
-            //return View(modelo);
-
         }
 
         [HttpGet]
-        public IActionResult Crear()
+        public async Task<IActionResult> Crear(int normaIsoId)
         {
-            return View();
+            var normaIso = await _context.NormaIsos
+                .FirstOrDefaultAsync(n => n.Id == normaIsoId);
+
+            if (normaIso == null)
+            {
+                TempData["Error"] = "No se encontró la norma ISO especificada.";
+                return RedirectToAction("Index", "NormaIso");
+            }
+
+            // 👇 primero calculamos el siguiente número de orden
+            int siguienteOrden = await _context.Clausulas
+                .Where(c => c.NormaIsoId == normaIso.Id)
+                .CountAsync() + 1;
+
+            // 👇 luego inicializamos el ViewModel
+            var viewModel = new ClausulaCrearViewModel
+            {
+                Codigo = string.Empty,
+                Descripcion = string.Empty,
+                NormaIsoId = normaIso.Id,
+                NombreNormaIso = normaIso.Nombre,
+                Orden = siguienteOrden
+            };
+
+            return View(viewModel);
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Crear(ClausulaCrearViewModel modelo)
@@ -106,10 +112,14 @@ namespace SistemaGestionIso.Controllers
                 Orden = modelo.Orden
             };
 
+
             _context.Add(clausula);
             await _context.SaveChangesAsync();
             TempData["Mensaje"] = "Cláusula creada exitosamente";
             return RedirectToAction("Listado", new { Id = modelo.NormaIsoId });
+
+
+
         }
 
     }
