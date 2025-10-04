@@ -1,5 +1,90 @@
-﻿@*
+﻿@model RequisitoListadoViewModel
+
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    ViewData["Title"] = "Gestión de Requisitos";
 }
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Gestión de Cláusulas</h2>
+            <p class="text-muted">
+                Norma: <strong>@ViewBag.CodigoClausula</strong> -
+                Versión: <strong>@ViewBag.DescripcionClausula</strong>
+            </p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Mensaje))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Model.Mensaje
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row mb-3">
+        <div class="col">
+            <a asp-action="Crear"
+               asp-route-clausulaId="@ViewBag.ClausulaId"
+               class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nuevo Requisito
+            </a>
+            <a asp-controller="Clausulas"
+               asp-action="Listado"
+               asp-route-id="@ViewBag.ClausulaId"
+               class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Cláusulas
+            </a>
+        </div>
+
+
+      @if(Model.Requisitos.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th style="width: 200px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Requisitos)
+                        {
+                            <tr>
+                                <td>@item.CodigoClausula</td>
+                                <td>@item.Descripcion</td>
+                                <td>
+                                    <a asp-action="Editar"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <a asp-action="Eliminar"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('¿Estás seguro de que deseas eliminar este requisito?');">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                No hay requisitos registrados para esta cláusula.
+            </div>
+        }
+
+
+
+</div>
