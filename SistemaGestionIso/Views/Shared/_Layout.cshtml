@@ -1,146 +1,138 @@
 ﻿@using SistemaGestionIso.Servicios
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light-style layout-navbar-fixed layout-menu-fixed">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>@ViewData["Title"] - Sistema de Gestión ISO</title>
 
     <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/site.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Perfect Scrollbar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/perfect-scrollbar/1.5.5/css/perfect-scrollbar.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-	
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <button class="sidebar-toggle" onclick="toggleSidebar()">
-            <i class="bi bi-chevron-left"></i>
+    <!-- Navbar Superior -->
+    <nav class="navbar-top">
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+            <i class="bi bi-list"></i>
         </button>
 
-        <div class="sidebar-brand">
-            <i class="bi bi-shield-check"></i>
-            <h4>ISO Manager</h4>
-        </div>
-
-        <ul class="sidebar-menu">
-            <li>
-                <a asp-controller="Home" asp-action="Index" class="active">
-                    <i class="bi bi-house-door"></i>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="NormasIso" asp-action="Listado">
-                    <i class="bi bi-journal-text"></i>
-                    <span class="nav-text">Normas ISO</span>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Clausulas" asp-action="Listado">
-                    <i class="bi bi-list-check"></i>
-                    <span class="nav-text">Cláusulas</span>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Requisitos" asp-action="Listado">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span class="nav-text">Requisitos</span>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Reportes" asp-action="Index">
-                    <i class="bi bi-graph-up"></i>
-                    <span class="nav-text">Reportes</span>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Configuracion" asp-action="Index">
-                    <i class="bi bi-gear"></i>
-                    <span class="nav-text">Configuración</span>
-                </a>
-            </li>
-        </ul>
-
-        <div style="position: absolute; bottom: 2rem; left: 1.5rem; right: 1.5rem;">
-            <a href="#" style="display: flex; align-items: center; gap: 1rem; padding: 0.875rem 1rem; color: var(--text-secondary); text-decoration: none; border-radius: 0.75rem; transition: all 0.3s ease;">
-                <i class="bi bi-box-arrow-right" style="font-size: 1.25rem;"></i>
-                <span class="nav-text">Cerrar Sesión</span>
-            </a>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                    <i class="bi bi-list"></i>
-                </button>
-                <div class="top-bar-title">
-                    <h2>@ViewData["Title"]</h2>
-                </div>
+        <a href="#" class="navbar-brand">
+            <div class="brand-icon">
+                <i class="bi bi-shield-check"></i>
             </div>
+            <span>ISO Manager</span>
+        </a>
 
-            <div class="top-bar-actions">
-                <div class="search-box">
-                    <i class="bi bi-search"></i>
-                    <input type="text" placeholder="Buscar...">
+        <div class="navbar-search" style="position: relative;">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Buscar... (Ctrl+/)">
+        </div>
+
+        <div class="navbar-actions">
+            <button class="navbar-icon-btn" title="Notificaciones">
+                <i class="bi bi-bell"></i>
+                <span class="badge">3</span>
+            </button>
+
+            <button class="navbar-icon-btn" title="Mensajes">
+                <i class="bi bi-chat-dots"></i>
+            </button>
+
+            <div class="navbar-user">
+                <div class="navbar-user-avatar">
+                    @(User.Identity?.Name?.Substring(0, 2).ToUpper() ?? "US")
                 </div>
-
-                <button class="btn btn-secondary" style="padding: 0.5rem 1rem;">
-                    <i class="bi bi-bell"></i>
-                </button>
-
-                <div class="user-menu">
-                    <div class="user-avatar">
-                        @(User.Identity?.Name?.Substring(0, 2).ToUpper() ?? "US")
-                    </div>
-                    <div class="nav-text">
-                        <div style="font-weight: 600; font-size: 0.9rem;">@(User.Identity?.Name ?? "Usuario")</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Administrador</div>
-                    </div>
-                    <i class="bi bi-chevron-down nav-text"></i>
+                <div class="navbar-user-info">
+                    <div class="navbar-user-name">@(User.Identity?.Name ?? "Usuario")</div>
+                    <div class="navbar-user-role">Administrador</div>
                 </div>
+                <i class="bi bi-chevron-down" style="font-size: 0.75rem; color: var(--text-muted);"></i>
             </div>
         </div>
+    </nav>
 
-        <!-- Content Area -->
-        <div class="content-area">
-            @RenderBody()
+    <!-- Menú Horizontal -->
+    <nav class="horizontal-menu" id="horizontalMenu">
+        <div class="menu-container">
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a asp-controller="Home" asp-action="Index" class="menu-link active">
+                        <i class="bi bi-house-door"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a asp-controller="NormasIso" asp-action="Listado" class="menu-link">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Normas ISO</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a asp-controller="Clausulas" asp-action="Listado" class="menu-link">
+                        <i class="bi bi-list-check"></i>
+                        <span>Cláusulas</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a asp-controller="Requisitos" asp-action="Listado" class="menu-link">
+                        <i class="bi bi-clipboard-check"></i>
+                        <span>Requisitos</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a asp-controller="Auditorias" asp-action="Index" class="menu-link">
+                        <i class="bi bi-search"></i>
+                        <span>Auditorías</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a asp-controller="Reportes" asp-action="Index" class="menu-link">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a asp-controller="Configuracion" asp-action="Index" class="menu-link">
+                        <i class="bi bi-gear"></i>
+                        <span>Configuración</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-    </main>
+    </nav>
+
+    <!-- Overlay para menú móvil -->
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        @RenderBody()
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/perfect-scrollbar/1.5.5/perfect-scrollbar.min.js"></script>
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('collapsed');
-
-            const icon = sidebar.querySelector('.sidebar-toggle i');
-            if (sidebar.classList.contains('collapsed')) {
-                icon.className = 'bi bi-chevron-right';
-            } else {
-                icon.className = 'bi bi-chevron-left';
-            }
-        }
-
+        // Toggle Mobile Menu
         function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('show');
+            const menu = document.getElementById('horizontalMenu');
+            const overlay = document.getElementById('menuOverlay');
+            menu.classList.toggle('show');
+            overlay.classList.toggle('show');
         }
 
-        // Set active menu item based on current page
+        // Set active menu item
         document.addEventListener('DOMContentLoaded', function() {
             const currentPath = window.location.pathname;
-            const menuLinks = document.querySelectorAll('.sidebar-menu a');
+            const menuLinks = document.querySelectorAll('.menu-link');
 
             menuLinks.forEach(link => {
                 link.classList.remove('active');
@@ -148,20 +140,35 @@
                     link.classList.add('active');
                 }
             });
+
+            // Cerrar menú móvil al hacer clic en un enlace
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 991) {
+                        toggleMobileMenu();
+                    }
+                });
+            });
+
+            // Keyboard shortcut para búsqueda (Ctrl+/)
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === '/') {
+                    e.preventDefault();
+                    document.querySelector('.navbar-search input')?.focus();
+                }
+            });
         });
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const mobileBtn = document.querySelector('.mobile-menu-btn');
-
-            if (window.innerWidth <= 768 &&
-                sidebar.classList.contains('show') &&
-                !sidebar.contains(event.target) &&
-                !mobileBtn.contains(event.target)) {
-                sidebar.classList.remove('show');
+        // Initialize Perfect Scrollbar for horizontal menu on desktop
+        if (window.innerWidth > 991) {
+            const menuContainer = document.querySelector('.menu-container');
+            if (menuContainer) {
+                new PerfectScrollbar(menuContainer, {
+                    wheelPropagation: false,
+                    suppressScrollY: true
+                });
             }
-        });
+        }
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
