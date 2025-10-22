@@ -3,56 +3,82 @@
 	ViewData["Title"] = "Registro";
 }
 
-<h1>Registro de Usuario</h1>
+ <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <div class="brand-logo">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h1 class="brand-title">¡Comienza tu aventura! 🚀</h1>
+                <p class="brand-subtitle">Crea tu cuenta y gestiona tus normas ISO</p>
+            </div>
 
-<div class="card">
-	<div class="card-body">
-		<form asp-action="Registro">
-			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="auth-body">
+                <form asp-action="Registro" asp-controller="Account" method="post">
+                    @if (ViewData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span>@ViewData["ErrorMessage"]</span>
+                        </div>
+                    }
 
-			<div class="mb-3">
-				<label asp-for="PrimerNombre" class="form-label"></label>
-				<input asp-for="PrimerNombre" class="form-control" />
-				<span asp-validation-for="PrimerNombre" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="SegundoNombre" class="form-label"></label>
-				<input asp-for="SegundoNombre" class="form-control" />
-				<span asp-validation-for="SegundoNombre" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="PrimerApellido" class="form-label"></label>
-				<input asp-for="PrimerApellido" class="form-control" />
-				<span asp-validation-for="PrimerApellido" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="SegundoApellido" class="form-label"></label>
-				<input asp-for="SegundoApellido" class="form-control" />
-				<span asp-validation-for="SegundoApellido" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="Email" class="form-label"></label>
-				<input asp-for="Email" class="form-control" />
-				<span asp-validation-for="Email" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="Password" class="form-label"></label>
-				<input asp-for="Password" class="form-control" type="password" />
-				<span asp-validation-for="Password" class="text-danger"></span>
-			</div>
-			@* <div class="mb-3">
-				<label asp-for="ConfirmPassword" class="form-label"></label>
-				<input asp-for="ConfirmPassword" class="form-control" type="password" />
-				<span asp-validation-for="ConfirmPassword" class="text-danger"></span> *@
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PrimerNombre" class="form-label"></label>
+                            <div class="input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="PrimerNombre" class="form-control" placeholder="Juan" />
+                            </div>
+                            <span asp-validation-for="PrimerNombre" class="invalid-feedback"></span>
+                        </div>
 
-			<button type="submit" class="btn btn-primary">Registrar</button>
-			<a asp-action="Login" class="btn btn-link">¿Ya tienes una cuenta? Inicia sesión</a>
+                        <div class="col-md-6 mb-3">
+                            <label for="SegundoNombre" class="form-label">Segundo Nombre</label>
+                            <div class="input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="SegundoNombre" class="form-control" placeholder="Carlos (opcional)" />
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PrimerApellido" class="form-label"></label>
+                            <div class="input-group">
+                                <i class="bi bi-person-badge"></i>
+                                <input asp-for="PrimerApellido" class="form-control" placeholder="Pérez" />
+                            </div>
+                            <span asp-validation-for="PrimerApellido" class="invalid-feedback"></span>
+                        </div>
 
-		</form>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SegundoApellido" class="form-label"></label>
+                            <div class="input-group">
+                                <i class="bi bi-person-badge"></i>
+                                <input asp-for="SegundoApellido" class="form-control" placeholder="García" />
+                            </div>
+                            <span asp-validation-for="SegundoApellido" class="invalid-feedback"></span>
+                        </div>
+                    </div>
 
-	</div>
+                    <div class="mb-3">
+                        <label for="Celular" class="form-label">Celular</label>
+                        <div class="input-group">
+                            <i class="bi bi-phone"></i>
+                            <input asp-for="Celular" class="form-control" placeholder="999 999 999 (opcional)" />
+                        </div>
+                    </div>
 
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <div class="input-group">
+                            <i class="bi bi-envelope"></i>
+                            <input asp-for="Email" class="form-control" placeholder="correo@ejemplo.com" autocomplete="email" />
+                        </div>
+
+                    </form>
+        </div>
 </div>
 
 @section Scripts {
