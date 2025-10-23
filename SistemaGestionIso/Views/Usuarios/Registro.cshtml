@@ -70,12 +70,54 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label"></label>
-                        <div class="input-group">
-                            <i class="bi bi-envelope"></i>
-                            <input asp-for="Email" class="form-control" placeholder="correo@ejemplo.com" autocomplete="email" />
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <div class="auth-input-group">
+                        <i class="bi bi-envelope"></i>
+                        <input asp-for="Email" class="form-control" placeholder="correo@ejemplo.com" autocomplete="email" />
+                    </div>
+                    <span asp-validation-for="Email" class="invalid-feedback"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <div class="auth-input-group">
+                        <i class="bi bi-lock"></i>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" id="password" autocomplete="new-password" />
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="bi bi-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="invalid-feedback"></span>
+
+                    <!-- Password Strength Indicator -->
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar">
+                            <div class="strength-bar-fill" id="strengthBarFill"></div>
                         </div>
+                        <span class="strength-text" id="strengthText"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mb-3">
+                    <i class="bi bi-check-circle"></i>
+                    Crear Cuenta
+                </button>
+
+                <div class="divider">
+                    <span>o regístrate con</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" class="btn-social" title="Google">
+                        <i class="bi bi-google"></i>
+                    </button>
+                    <button type="button" class="btn-social" title="Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </button>
+                    <button type="button" class="btn-social" title="Microsoft">
+                        <i class="bi bi-microsoft"></i>
+                    </button>
+                </div>
 
                     </form>
         </div>
