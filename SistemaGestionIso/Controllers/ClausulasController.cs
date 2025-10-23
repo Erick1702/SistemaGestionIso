@@ -16,6 +16,35 @@ namespace SistemaGestionIso.Controllers
             _context = context;
         }
 
+        // MÉTODO 1: Index - Para el menú "Cláusulas" (ver todas las cláusulas)
+        [HttpGet]
+        [Authorize(Roles = $"{Constantes.RolAdministrador}, {Constantes.RolEncargadoSig}")]
+        public async Task<IActionResult> Index()
+        {
+            var clausulas = await _context.Clausulas
+                .Include(c => c.NormaIso)
+                .OrderBy(c => c.NormaIso.Nombre)
+                .ThenBy(c => c.Orden)
+                .Select(c => new ClausulaViewModel
+                {
+                    Id = c.Id,
+                    Codigo = c.Codigo,
+                    Descripcion = c.Descripcion,
+                    NormaIsoId = c.NormaIsoId,
+                    NombreNormaIso = c.NormaIso.Nombre + " - " + c.NormaIso.Version,
+                    Orden = c.Orden
+                })
+                .ToListAsync();
+
+            var viewModel = new ClausulaListadoViewModel
+            {
+                Clausulas = clausulas,
+                Mensaje = TempData["Mensaje"]?.ToString()
+            };
+
+            return View(viewModel);
+        }
+
 
         [HttpGet]
         [Authorize(Roles = $"{Constantes.RolAdministrador}, {Constantes.RolEncargadoSig}")]
@@ -28,7 +57,7 @@ namespace SistemaGestionIso.Controllers
             {
                 TempData["Error"] = "La norma ISO no existe";
                 //return NotFound();
-                return RedirectToAction("Crear", "Clausulas");
+                return RedirectToAction("Index", "Clausulas");
             }
 
             var clausulas = await _context.Clausulas

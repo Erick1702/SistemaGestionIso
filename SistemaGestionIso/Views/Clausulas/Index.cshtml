@@ -1,0 +1,269 @@
+﻿@model ClausulaListadoViewModel
+
+@{
+    ViewData["Title"] = "Todas las Cláusulas";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    <i class="bi bi-list-check text-primary"></i>
+                    Todas las Cláusulas
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Visualiza y gestiona todas las cláusulas de todas las normas ISO
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="NormasIso" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-journal-text"></i>
+                    Ver Normas ISO
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span>@Model.Mensaje</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Total Cláusulas</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.Clausulas.Count()
+                        </h3>
+                    </div>
+                    <div class="stats-icon primary">
+                        <i class="bi bi-list-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Normas ISO</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.Clausulas.Select(c => c.NormaIsoId).Distinct().Count()
+                        </h3>
+                    </div>
+                    <div class="stats-icon success">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Promedio por Norma</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @{
+                                var normasCount = Model.Clausulas.Select(c => c.NormaIsoId).Distinct().Count();
+                                var promedio = normasCount > 0 ? Math.Round((double)Model.Clausulas.Count() / normasCount, 1) : 0;
+                            }
+                            @promedio
+                        </h3>
+                    </div>
+                    <div class="stats-icon warning">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Estado</p>
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">
+                            Activas
+                        </h3>
+                    </div>
+                    <div class="stats-icon info">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table Card -->
+@if (Model.Clausulas.Any())
+{
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Listado de Todas las Cláusulas</h5>
+            <div class="d-flex gap-2">
+                <div style="position: relative;">
+                    <i class="bi bi-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar..."
+                           style="padding-left: 2.25rem; width: 250px; height: 36px;">
+                </div>
+                <select id="filterNorma" class="form-select form-select-sm" style="width: 200px; height: 36px;">
+                    <option value="">Todas las normas</option>
+                    @foreach (var norma in Model.Clausulas.Select(c => new { c.NormaIsoId, c.NombreNormaIso }).Distinct())
+                    {
+                        <option value="@norma.NormaIsoId">@norma.NombreNormaIso</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="table" id="clausulasTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ORDEN</th>
+                            <th style="width: 150px;">CÓDIGO</th>
+                            <th>DESCRIPCIÓN</th>
+                            <th style="width: 250px;">NORMA ISO</th>
+                            <th style="width: 180px; text-align: center;">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Clausulas)
+                        {
+                            <tr data-norma-id="@item.NormaIsoId">
+                                <td>
+                                    <span class="badge badge-primary" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                        #@item.Orden
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong style="color: var(--text-primary);">@item.Codigo</strong>
+                                </td>
+                                <td style="color: var(--text-primary);">
+                                    @(item.Descripcion.Length > 80 ? item.Descripcion.Substring(0, 80) + "..." : item.Descripcion)
+                                </td>
+                                <td>
+                                    <span class="badge badge-info" style="font-size: 0.8125rem; padding: 0.5rem 0.75rem;">
+                                        @item.NombreNormaIso
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <a asp-action="Listado" asp-route-id="@item.NormaIsoId"
+                                           class="btn btn-sm btn-outline-secondary"
+                                           title="Ver cláusulas de esta norma"
+                                           style="padding: 0.375rem 0.75rem;">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Editar" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-primary"
+                                           title="Editar"
+                                           style="padding: 0.375rem 0.75rem;">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: var(--body-bg); border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+            <div class="d-flex justify-content-between align-items-center">
+                <span style="color: var(--text-muted); font-size: 0.875rem;">
+                    Mostrando <strong id="visibleCount">@Model.Clausulas.Count()</strong> de <strong>@Model.Clausulas.Count()</strong> cláusulas
+                </span>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center" style="padding: 3rem 1.5rem;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: rgba(115, 103, 240, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-inbox" style="font-size: 2.5rem; color: var(--primary);"></i>
+            </div>
+            <h5 style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem;">
+                No hay cláusulas registradas
+            </h5>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Comience creando una norma ISO y luego agregue sus cláusulas
+            </p>
+            <a asp-controller="NormasIso" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-journal-text"></i>
+                Ver Normas ISO
+            </a>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Búsqueda y filtrado
+        const searchInput = document.getElementById('searchInput');
+        const filterNorma = document.getElementById('filterNorma');
+        const tableRows = document.querySelectorAll('#clausulasTable tbody tr');
+        const visibleCount = document.getElementById('visibleCount');
+
+        function filterTable() {
+            const searchValue = searchInput?.value.toLowerCase() || '';
+            const normaValue = filterNorma?.value || '';
+            let visibleRows = 0;
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const normaId = row.getAttribute('data-norma-id');
+
+                const matchSearch = text.includes(searchValue);
+                const matchNorma = normaValue === '' || normaId === normaValue;
+
+                if (matchSearch && matchNorma) {
+                    row.style.display = '';
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (visibleCount) {
+                visibleCount.textContent = visibleRows;
+            }
+        }
+
+        searchInput?.addEventListener('keyup', filterTable);
+        filterNorma?.addEventListener('change', filterTable);
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}
