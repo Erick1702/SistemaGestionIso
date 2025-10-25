@@ -1,0 +1,459 @@
+﻿@using SistemaGestionIso.Entidades
+@using SistemaGestionIso.Models.Cumplimiento
+@model CumplimientoDetalleViewModel
+
+@{
+    ViewData["Title"] = "Detalles del Cumplimiento";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: transparent; padding: 0; margin-bottom: 1rem;">
+                <li class="breadcrumb-item">
+                    <a asp-controller="Cumplimientos" asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        <i class="bi bi-check-circle"></i> Cumplimientos
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" style="color: var(--text-muted);">
+                    Detalles
+                </li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    Detalles del Cumplimiento
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Evaluación del @Model.Fecha.ToString("dd/MM/yyyy")
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Listado" asp-route-id="@Model.RequisitoId" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+                <a asp-action="Editar" asp-route-id="@Model.Id" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i>
+                    Editar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span>@TempData["Mensaje"]</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>@TempData["Error"]</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- Información del Cumplimiento -->
+    <div class="col-lg-8 mb-4">
+        <!-- Card de Estado -->
+        <div class="card mb-4" style="border-left: 4px solid var(--@Model.EstadoColor);">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-start gap-3">
+                        <div style="width: 60px; height: 60px; background: rgba(@(Model.EstadoColor == "success" ? "40, 199, 111" : Model.EstadoColor == "warning" ? "255, 159, 67" : "234, 84, 85"), 0.12); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--@Model.EstadoColor); font-size: 1.75rem;">
+                            <i class="bi bi-@(Model.Estado == EstadoCumplimiento.Cumple ? "check-circle" : Model.Estado == EstadoCumplimiento.Parcial ? "exclamation-circle" : "x-circle")"></i>
+                        </div>
+                        <div>
+                            <h5 style="margin: 0 0 0.5rem 0; color: var(--text-primary); font-weight: 600;">
+                                Estado de Cumplimiento
+                            </h5>
+                            <span class="badge badge-@Model.EstadoColor" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                @Model.EstadoTexto
+                            </span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.875rem;">Fecha de Evaluación</p>
+                        <p style="margin: 0; color: var(--text-primary); font-size: 1.125rem; font-weight: 600;">
+                            @Model.Fecha.ToString("dd/MM/yyyy")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Información del Requisito -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clipboard-check text-primary"></i>
+                    Requisito Evaluado
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Norma ISO</label>
+                        <p style="font-size: 1rem; color: var(--text-primary); margin: 0.25rem 0 0 0; font-weight: 600;">
+                            @Model.NombreNormaIso
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Cláusula</label>
+                        <p style="font-size: 1rem; color: var(--text-primary); margin: 0.25rem 0 0 0;">
+                            <span class="badge badge-primary" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                @Model.CodigoClausula
+                            </span>
+                            @Model.DescripcionClausula
+                        </p>
+                    </div>
+                    <div class="col-12">
+                        <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Descripción del Requisito</label>
+                        <p style="font-size: 0.9375rem; color: var(--text-primary); margin: 0.25rem 0 0 0; line-height: 1.6;">
+                            @Model.DescripcionRequisito
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Observaciones -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-chat-left-text text-primary"></i>
+                    Observaciones
+                </h5>
+            </div>
+            <div class="card-body">
+                <p style="margin: 0; color: var(--text-primary); line-height: 1.6; white-space: pre-wrap;">@Model.Observaciones</p>
+            </div>
+        </div>
+
+        <!-- Card de Evidencias -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-paperclip text-primary"></i>
+                    Evidencias (@Model.Evidencias.Count)
+                </h5>
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#subirEvidenciaModal">
+                    <i class="bi bi-cloud-upload"></i>
+                    Subir Evidencia
+                </button>
+            </div>
+            <div class="card-body">
+                @if (Model.Evidencias.Any())
+                {
+                    <div class="row g-3">
+                        @foreach (var evidencia in Model.Evidencias)
+                        {
+                            <div class="col-md-6">
+                                <div class="card h-100" style="border: 1px solid var(--border-color); transition: all 0.3s ease;">
+                                    <div class="card-body d-flex align-items-start gap-3">
+                                        <div style="width: 48px; height: 48px; background: rgba(115, 103, 240, 0.12); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.5rem; flex-shrink: 0;">
+                                            @{
+                                                var extension = Path.GetExtension(evidencia.NombreArchivo).ToLower();
+                                                var icono = extension switch
+                                                {
+                                                    ".pdf" => "bi-file-earmark-pdf",
+                                                    ".doc" or ".docx" => "bi-file-earmark-word",
+                                                    ".xls" or ".xlsx" => "bi-file-earmark-excel",
+                                                    ".jpg" or ".jpeg" or ".png" or ".gif" => "bi-file-earmark-image",
+                                                    ".zip" or ".rar" => "bi-file-earmark-zip",
+                                                    _ => "bi-file-earmark"
+                                                };
+                                            }
+                                            <i class="bi @icono"></i>
+                                        </div>
+                                        <div style="flex: 1; min-width: 0;">
+                                            <h6 style="margin: 0 0 0.25rem 0; font-size: 0.875rem; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                @evidencia.NombreArchivo
+                                            </h6>
+                                            <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">
+                                                <i class="bi bi-calendar3"></i> @evidencia.FechaSubida.ToString("dd/MM/yyyy HH:mm")
+                                            </p>
+                                            <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: var(--text-muted);">
+                                                <i class="bi bi-person-circle"></i> @evidencia.NombreUsuario
+                                            </p>
+                                            <div class="d-flex gap-1 mt-2">
+                                                <a asp-controller="Evidencias" asp-action="Descargar" asp-route-id="@evidencia.Id"
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                                    <i class="bi bi-download"></i> Descargar
+                                                </a>
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteEvidenciaModal-@evidencia.Id">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal de Confirmación de Eliminación -->
+                                <div class="modal fade" id="deleteEvidenciaModal-@evidencia.Id" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content" style="border-radius: 0.75rem; border: none;">
+                                            <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem;">
+                                                <h5 class="modal-title" style="color: var(--text-primary); font-weight: 600;">
+                                                    <i class="bi bi-exclamation-triangle text-warning"></i>
+                                                    Confirmar Eliminación
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body" style="padding: 1.5rem;">
+                                                <p style="margin: 0; color: var(--text-primary);">
+                                                    ¿Está seguro de que desea eliminar la evidencia <strong>"@evidencia.NombreArchivo"</strong>?
+                                                </p>
+                                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.875rem;">
+                                                    Esta acción no se puede deshacer y el archivo se eliminará permanentemente.
+                                                </p>
+                                            </div>
+                                            <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                    Cancelar
+                                                </button>
+                                                <form asp-controller="Evidencias" asp-action="Eliminar" asp-route-id="@evidencia.Id" method="post" style="display:inline;">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: rgba(115, 103, 240, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-inbox" style="font-size: 1.75rem; color: var(--primary);"></i>
+                        </div>
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.875rem;">
+                            No hay evidencias adjuntas a este cumplimiento
+                        </p>
+                        <button type="button" class="btn btn-primary btn-sm mt-3" data-bs-toggle="modal" data-bs-target="#subirEvidenciaModal">
+                            <i class="bi bi-cloud-upload"></i>
+                            Subir Primera Evidencia
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Información Adicional -->
+    <div class="col-lg-4">
+        <!-- Card de Responsable -->
+        <div class="card mb-4">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(115, 103, 240, 0.08) 0%, rgba(158, 149, 245, 0.08) 100%);">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person-circle text-primary"></i>
+                    Responsable
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(Model.NombreUsuarioResponsable))
+                {
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--info)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1rem;">
+                            @Model.NombreUsuarioResponsable.Substring(0, 2).ToUpper()
+                        </div>
+                        <div>
+                            <p style="margin: 0; color: var(--text-primary); font-weight: 600; font-size: 0.9375rem;">
+                                @Model.NombreUsuarioResponsable
+                            </p>
+                            @if (!string.IsNullOrEmpty(Model.EmailUsuarioResponsable))
+                            {
+                                <p style="margin: 0; color: var(--text-muted); font-size: 0.8125rem;">
+                                    <i class="bi bi-envelope"></i> @Model.EmailUsuarioResponsable
+                                </p>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p style="margin: 0; color: var(--text-muted); text-align: center; padding: 1rem;">
+                        No asignado
+                    </p>
+                }
+            </div>
+        </div>
+
+        <!-- Card de Acciones Rápidas -->
+        <div class="card mb-4">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(40, 199, 111, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning text-success"></i>
+                    Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Editar" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil"></i>
+                        Editar Evaluación
+                    </a>
+                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#subirEvidenciaModal">
+                        <i class="bi bi-cloud-upload"></i>
+                        Subir Evidencia
+                    </button>
+                    <a asp-action="Listado" asp-route-id="@Model.RequisitoId" class="btn btn-outline-secondary">
+                        <i class="bi bi-list"></i>
+                        Ver Todas las Evaluaciones
+                    </a>
+                    <a asp-controller="Requisitos" asp-action="Detalles" asp-route-id="@Model.RequisitoId" class="btn btn-outline-info">
+                        <i class="bi bi-clipboard-check"></i>
+                        Ver Requisito
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Estadísticas -->
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(0, 207, 232, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bar-chart text-info"></i>
+                    Estadísticas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3" style="border-bottom: 1px solid var(--border-color);">
+                    <span style="color: var(--text-muted); font-size: 0.875rem;">Total Evidencias</span>
+                    <span style="color: var(--text-primary); font-weight: 600; font-size: 1.125rem;">@Model.CantidadEvidencias</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3" style="border-bottom: 1px solid var(--border-color);">
+                    <span style="color: var(--text-muted); font-size: 0.875rem;">Fecha de Evaluación</span>
+                    <span style="color: var(--text-primary); font-weight: 600; font-size: 0.9375rem;">@Model.Fecha.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="color: var(--text-muted); font-size: 0.875rem;">Estado</span>
+                    <span class="badge badge-@Model.EstadoColor">@Model.EstadoTexto</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Subir Evidencia -->
+<div class="modal fade" id="subirEvidenciaModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 0.75rem; border: none;">
+            <form asp-controller="Evidencias" asp-action="Subir" method="post" enctype="multipart/form-data" id="subirEvidenciaForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="CumplimientoId" value="@Model.Id" />
+
+                <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem; background: linear-gradient(135deg, rgba(40, 199, 111, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);">
+                    <h5 class="modal-title" style="color: var(--text-primary); font-weight: 600;">
+                        <i class="bi bi-cloud-upload text-success"></i>
+                        Subir Nueva Evidencia
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="padding: 1.5rem;">
+                    <div class="mb-3">
+                        <label for="archivoInput" class="form-label">
+                            Seleccionar Archivo
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="file"
+                               class="form-control"
+                               id="archivoInput"
+                               name="Archivo"
+                               required
+                               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.zip,.rar" />
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            Formatos permitidos: PDF, Word, Excel, Imágenes, ZIP, RAR (Máx. 10 MB)
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descripcionInput" class="form-label">Descripción (Opcional)</label>
+                        <textarea class="form-control"
+                                  id="descripcionInput"
+                                  name="Descripcion"
+                                  rows="3"
+                                  placeholder="Ingrese una descripción breve de la evidencia..."
+                                  maxlength="500"></textarea>
+                    </div>
+
+                    <div id="previewContainer" class="d-none">
+                        <div class="alert alert-info">
+                            <strong>Archivo seleccionado:</strong>
+                            <p id="nombreArchivo" style="margin: 0.5rem 0 0 0;"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-cloud-upload"></i>
+                        Subir Evidencia
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Preview del archivo seleccionado
+        document.getElementById('archivoInput')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const previewContainer = document.getElementById('previewContainer');
+            const nombreArchivo = document.getElementById('nombreArchivo');
+
+            if (file) {
+                nombreArchivo.textContent = file.name + ' (' + formatBytes(file.size) + ')';
+                previewContainer.classList.remove('d-none');
+            } else {
+                previewContainer.classList.add('d-none');
+            }
+        });
+
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}
