@@ -1,0 +1,401 @@
+﻿@using SistemaGestionIso.Models.Cumplimiento
+@using SistemaGestionIso.Entidades
+@model CumplimientoListadoViewModel
+
+@{
+    ViewData["Title"] = "Gestión de Cumplimientos";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: transparent; padding: 0; margin-bottom: 1rem;">
+                <li class="breadcrumb-item">
+                    <a asp-controller="NormasIso" asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        <i class="bi bi-journal-text"></i> Normas ISO
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Clausulas" asp-action="Listado" asp-route-id="@ViewBag.NormaIsoId" style="color: var(--primary); text-decoration: none;">
+                        Cláusulas
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Requisitos" asp-action="Listado" asp-route-id="@ViewBag.ClausulaId" style="color: var(--primary); text-decoration: none;">
+                        Requisitos
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" style="color: var(--text-muted);">
+                    Cumplimientos
+                </li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    Gestión de Cumplimientos
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Norma: <strong>@ViewBag.NombreNormaIso - @ViewBag.VersionNormaIso</strong> |
+                    Cláusula: <strong>@ViewBag.CodigoClausula</strong>
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="Requisitos" asp-action="Listado" asp-route-id="@ViewBag.ClausulaId" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver a Requisitos
+                </a>
+                <a asp-action="Crear" asp-route-requisitoId="@ViewBag.RequisitoId" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Nuevo Cumplimiento
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span>@Model.Mensaje</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>@TempData["Error"]</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Requisito Info Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" style="background: linear-gradient(135deg, rgba(115, 103, 240, 0.08) 0%, rgba(158, 149, 245, 0.08) 100%); border: 1px solid rgba(115, 103, 240, 0.2);">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div style="width: 48px; height: 48px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                            <div>
+                                <h5 style="margin: 0 0 0.25rem 0; color: var(--text-primary); font-weight: 600;">
+                                    Requisito en Evaluación
+                                </h5>
+                                <p style="margin: 0 0 0.5rem 0; color: var(--text-muted); font-size: 0.875rem;">
+                                    Cláusula: <strong>@ViewBag.CodigoClausula</strong> - @ViewBag.DescripcionClausula
+                                </p>
+                            </div>
+                        </div>
+                        <p style="margin: 0; color: var(--text-primary); line-height: 1.6;">
+                            @ViewBag.DescripcionRequisito
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Total Evaluaciones</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.Cumplimientos.Count()
+                        </h3>
+                    </div>
+                    <div class="stats-icon primary">
+                        <i class="bi bi-clipboard-data"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Cumple</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--success);">
+                            @Model.TotalCumple
+                        </h3>
+                    </div>
+                    <div class="stats-icon success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Parcial</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--warning);">
+                            @Model.TotalParcial
+                        </h3>
+                    </div>
+                    <div class="stats-icon warning">
+                        <i class="bi bi-exclamation-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">No Cumple</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--danger);">
+                            @Model.TotalNoCumple
+                        </h3>
+                    </div>
+                    <div class="stats-icon danger">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Porcentaje de Cumplimiento -->
+@if (Model.Cumplimientos.Any())
+{
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card" style="background: linear-gradient(135deg, rgba(40, 199, 111, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%); border: 1px solid rgba(40, 199, 111, 0.2);">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width: 60px; height: 60px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin: 0 0 0.25rem 0; color: var(--text-primary); font-weight: 600;">
+                                    Porcentaje de Cumplimiento del Requisito
+                                </h5>
+                                <p style="margin: 0; color: var(--text-muted); font-size: 0.875rem;">
+                                    Basado en las @Model.Cumplimientos.Count() evaluaciones realizadas
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h2 style="margin: 0; font-size: 2.5rem; font-weight: 700; color: var(--success);">
+                                @Model.PorcentajeCumplimiento%
+                            </h2>
+                            <p style="margin: 0; color: var(--text-muted); font-size: 0.875rem;">de cumplimiento</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Table Card -->
+@if (Model.Cumplimientos.Any())
+{
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Historial de Evaluaciones</h5>
+            <div style="position: relative;">
+                <i class="bi bi-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar..."
+                       style="padding-left: 2.25rem; width: 200px; height: 36px;">
+            </div>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="table" id="cumplimientosTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th style="width: 120px;">FECHA</th>
+                            <th style="width: 150px; text-align: center;">ESTADO</th>
+                            <th>OBSERVACIONES</th>
+                            <th style="width: 180px;">RESPONSABLE</th>
+                            <th style="width: 80px; text-align: center;">EVID.</th>
+                            <th style="width: 180px; text-align: center;">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int contador = 1;
+                        }
+                        @foreach (var item in Model.Cumplimientos)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge badge-secondary" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                        @contador
+                                    </span>
+                                </td>
+                                <td style="color: var(--text-primary); font-size: 0.875rem; font-weight: 500;">
+                                    @item.Fecha.ToString("dd/MM/yyyy")
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="badge badge-@item.EstadoColor" style="font-size: 0.875rem; padding: 0.5rem 0.875rem;">
+                                        <i class="bi bi-@(item.Estado == EstadoCumplimiento.Cumple ? "check-circle" : item.Estado == EstadoCumplimiento.Parcial ? "exclamation-circle" : "x-circle")"></i>
+                                        @item.EstadoTexto
+                                    </span>
+                                </td>
+                                <td style="color: var(--text-primary);">
+                                    @(item.Observaciones.Length > 100 ? item.Observaciones.Substring(0, 100) + "..." : item.Observaciones)
+                                </td>
+                                <td style="color: var(--text-primary); font-size: 0.875rem;">
+                                    <i class="bi bi-person-circle" style="color: var(--primary);"></i>
+                                    @item.NombreUsuarioResponsable
+                                </td>
+                                <td style="text-align: center;">
+                                    @if (item.CantidadEvidencias > 0)
+                                    {
+                                        <span class="badge badge-success" style="font-size: 0.875rem; padding: 0.5rem 0.625rem;">
+                                            <i class="bi bi-paperclip"></i>
+                                            @item.CantidadEvidencias
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted" style="font-size: 0.875rem;">0</span>
+                                    }
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <a asp-action="Detalles" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-secondary"
+                                           title="Ver Detalles"
+                                           style="padding: 0.375rem 0.75rem;">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Editar" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-primary"
+                                           title="Editar"
+                                           style="padding: 0.375rem 0.75rem;">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger"
+                                                title="Eliminar"
+                                                style="padding: 0.375rem 0.75rem;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal-@item.Id">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Modal de Confirmación de Eliminación -->
+                                    <div class="modal fade" id="deleteModal-@item.Id" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content" style="border-radius: 0.75rem; border: none;">
+                                                <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem;">
+                                                    <h5 class="modal-title" style="color: var(--text-primary); font-weight: 600;">
+                                                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                                                        Confirmar Eliminación
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body" style="padding: 1.5rem;">
+                                                    <p style="margin: 0; color: var(--text-primary);">
+                                                        ¿Está seguro de que desea eliminar esta evaluación de cumplimiento del <strong>@item.Fecha.ToString("dd/MM/yyyy")</strong>?
+                                                    </p>
+                                                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.875rem;">
+                                                        Esta acción no se puede deshacer y se perderán todas las evidencias asociadas.
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                        Cancelar
+                                                    </button>
+                                                    <form asp-action="Eliminar" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="bi bi-trash"></i>
+                                                            Eliminar
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            contador++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: var(--body-bg); border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+            <div class="d-flex justify-content-between align-items-center">
+                <span style="color: var(--text-muted); font-size: 0.875rem;">
+                    Mostrando <strong>@Model.Cumplimientos.Count()</strong> evaluaciones
+                </span>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center" style="padding: 3rem 1.5rem;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: rgba(115, 103, 240, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-inbox" style="font-size: 2.5rem; color: var(--primary);"></i>
+            </div>
+            <h5 style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem;">
+                No hay evaluaciones registradas
+            </h5>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                Comience registrando la primera evaluación de cumplimiento para este requisito
+            </p>
+            <a asp-action="Crear" asp-route-requisitoId="@ViewBag.RequisitoId" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Crear Primera Evaluación
+            </a>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Búsqueda en tiempo real
+        document.getElementById('searchInput')?.addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#cumplimientosTable tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}

@@ -15,6 +15,12 @@ namespace SistemaGestionIso.Models.Cumplimiento
         public string EstadoColor { get; set; }
         public DateTime Fecha { get; set; }
         public string Observaciones { get; set; } = "";
+
+        // Usuario Responsable
+        public string? UsuarioResponsableId { get; set; }
+        public string? NombreUsuarioResponsable { get; set; }
+        public string? EmailUsuarioResponsable { get; set; }
+
         public int CantidadEvidencias { get; set; }
 
         // Para mostrar las evidencias

@@ -10,6 +10,9 @@
         public string Observaciones { get; set; } = "";
 
         //Agregar usuario resposable
+        // TODO: Agregar usuario responsable
+         public string UsuarioResponsableId { get; set; }
+         public Usuario? UsuarioResponsable { get; set; }
         public List<Evidencia> Evidencias { get; set; }
     }
 }

@@ -34,5 +34,11 @@ namespace SistemaGestionIso.Models.Cumplimiento
         [StringLength(1000, ErrorMessage = "Las observaciones no pueden exceder {1} caracteres")]
         [Display(Name = "Observaciones")]
         public string Observaciones { get; set; } = "";
+
+        // Usuario Responsable
+        [Display(Name = "Usuario Responsable")]
+        public string? UsuarioResponsableId { get; set; }
+
+        public string? NombreUsuarioResponsable { get; set; }
     }
 }

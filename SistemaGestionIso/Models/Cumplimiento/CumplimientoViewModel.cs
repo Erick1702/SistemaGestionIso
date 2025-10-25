@@ -45,6 +45,10 @@ namespace SistemaGestionIso.Models.Cumplimiento
         [Display(Name = "Observaciones")]
         public string Observaciones { get; set; } = "";
 
+        // Usuario Responsable
+        public string? UsuarioResponsableId { get; set; }
+        public string? NombreUsuarioResponsable { get; set; }
+
         public int CantidadEvidencias { get; set; }
     }
 }
