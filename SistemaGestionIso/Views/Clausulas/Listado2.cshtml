@@ -1,0 +1,115 @@
+﻿@model ClausulaListadoViewModel
+
+@{
+    ViewData["Title"] = "Gestión de Cláusulas";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Gestión de Cláusulas</h2>
+            <p class="text-muted">
+                Norma: <strong>@ViewBag.NombreNormaIso</strong> -
+                Versión: <strong>@ViewBag.VersionNormaIso</strong>
+            </p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Mensaje))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Model.Mensaje
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row mb-3">
+        <div class="col">
+            <a asp-action="Crear"
+               asp-route-normaIsoId="@ViewBag.NormaIsoId"
+               class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nueva Cláusula
+            </a>
+            <a asp-controller="NormasIso"
+               asp-action="Listado"
+               class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Normas ISO
+            </a>
+        </div>
+    </div>
+
+    @if (Model.Clausulas.Any())
+    {
+        
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Orden</th>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Clausulas)
+                    {
+                        <tr>
+                            <td>@item.Orden</td>
+                            <td>@item.Codigo</td>
+                            <td>@item.Descripcion</td>
+                            <td>
+                                <a asp-action="Editar"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal-@item.Id">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                                <a asp-controller="Requisitos" asp-action="Listado" asp-route-id="@item.Id" class="btn btn-success">Gestionar Requisitos</a>
+
+                                <!-- Modal de confirmación -->
+                                <div class="modal fade" id="deleteModal-@item.Id" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirmar Eliminación</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Está seguro de eliminar la cláusula <strong>@item.Codigo</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Cancelar
+                                                </button>
+                                                <form asp-action="Eliminar" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-danger">
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle"></i>
+            <strong>No hay cláusulas registradas para esta norma ISO.</strong>
+            <br>
+            Comience agregando una nueva cláusula haciendo clic en el botón "Nueva Cláusula".
+        </div>
+    }
+</div>

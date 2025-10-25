@@ -1,35 +1,298 @@
 ﻿@model RequisitoCrearViewModel
 
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
-    ViewData["Title"] = "Registro de Requisito";
+    ViewData["Title"] = Model.Id == 0 ? "Crear Requisito" : "Editar Requisito";
+    var isEdit = Model.Id != 0;
 }
-<h1>Registro de Requisito</h1>
 
-<form asp-action="Crear" >
-    @* Campo oculto que envía el ID de la cláusula *@
-    <input type="hidden" asp-for="ClausulaId" />
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-    <!-- Mostrar el nombre de la Cláusula (solo lectura) -->
-    <div class="mb-3">
-        <label class="form-label">Cláusula</label>
-        <input type="text" class="form-control" value="@Model.CodigoClausula" readonly />
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: transparent; padding: 0; margin-bottom: 1rem;">
+                <li class="breadcrumb-item">
+                    <a asp-controller="NormasIso" asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        <i class="bi bi-journal-text"></i> Normas ISO
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Clausulas" asp-action="Listado" asp-route-id="@Model.NormaIsoId" style="color: var(--primary); text-decoration: none;">
+                        Cláusulas
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-action="Listado" asp-route-id="@Model.ClausulaId" style="color: var(--primary); text-decoration: none;">
+                        Requisitos
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" style="color: var(--text-muted);">
+                    @ViewData["Title"]
+                </li>
+            </ol>
+        </nav>
+        <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+            @if (isEdit)
+            {
+                <i class="bi bi-pencil-square text-primary"></i>
+                <text>Editar Requisito</text>
+            }
+            else
+            {
+                <i class="bi bi-plus-circle text-success"></i>
+                <text>Nuevo Requisito</text>
+            }
+        </h4>
+        <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+            Norma ISO: <strong>@Model.NombreNormaIso</strong> | Cláusula: <strong>@Model.CodigoClausula</strong>
+        </p>
     </div>
-   @*  <div class="mb-3">
-        <label asp-for="CodigoClausula" class="form-label"></label>
-        <input asp-for="CodigoClausula" class="form-control" placeholder="Ej. 4.1.1" />
-        <span asp-validation-for="CodigoClausula" class="text-danger"></span>
-    </div> *@
-    <div class="mb-3">
-        <label asp-for="Descripcion" class="form-label"></label>
-        <input asp-for="Descripcion" class="form-control" />
-        <span asp-validation-for="Descripcion" class="text-danger"></span>
-    </div>
-    
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <a asp-controller="Clausulas" asp-action="Listado" asp-route-id="@Model.ClausulaId" class="btn btn-secondary">Cancelar</a>
+</div>
 
-    
-</form>
+<div class="row">
+    <!-- Formulario Principal -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    Información del Requisito
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="@(isEdit ? "Editar" : "Crear")" method="post" id="requisitoForm">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Id)
+                    @Html.HiddenFor(m => m.ClausulaId)
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label asp-for="Descripcion" class="form-label">
+                            Descripción del Requisito
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text align-items-start pt-2" style="background-color: var(--body-bg); border-right: 0;">
+                                <i class="bi bi-file-text"></i>
+                            </span>
+                            <textarea asp-for="Descripcion"
+                                      class="form-control"
+                                      rows="6"
+                                      placeholder="Ingrese la descripción detallada del requisito..."
+                                      maxlength="550"
+                                      style="border-left: 0;"
+                                      id="descripcionTextarea"></textarea>
+                        </div>
+                        <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                Describa detalladamente el requisito de la cláusula
+                            </small>
+                            <small class="text-muted">
+                                <span id="charCount">0</span>/550
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Información de Cláusula (Solo lectura) -->
+                    <div class="alert alert-info d-flex align-items-start gap-3" style="background-color: rgba(0, 207, 232, 0.08); border-color: var(--info);">
+                        <i class="bi bi-info-circle" style="font-size: 1.25rem; color: var(--info);"></i>
+                        <div>
+                            <strong style="color: var(--info);">Cláusula Asociada:</strong>
+                            <p style="margin: 0.25rem 0 0 0; color: var(--text-primary);">
+                                <strong>@Model.CodigoClausula</strong> - @Model.DescripcionClausula
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 justify-content-end mt-4 pt-3" style="border-top: 1px solid var(--border-color);">
+                        <a asp-action="Listado" asp-route-id="@Model.ClausulaId" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </a>
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            Limpiar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            @(isEdit ? "Actualizar Requisito" : "Crear Requisito")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Lateral de Ayuda -->
+    <div class="col-lg-4">
+        <!-- Card de Información -->
+        <div class="card mb-4">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(115, 103, 240, 0.08) 0%, rgba(158, 149, 245, 0.08) 100%);">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i>
+                    Consejos Útiles
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div style="display: flex; gap: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: rgba(115, 103, 240, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-1-circle" style="color: var(--primary);"></i>
+                        </div>
+                        <div>
+                            <h6 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0; color: var(--text-primary);">
+                                Sea Específico
+                            </h6>
+                            <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                                Describa claramente qué debe cumplirse según la norma ISO
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div style="display: flex; gap: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: rgba(40, 199, 111, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-2-circle" style="color: var(--success);"></i>
+                        </div>
+                        <div>
+                            <h6 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0; color: var(--text-primary);">
+                                Contexto Completo
+                            </h6>
+                            <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                                Incluya toda la información necesaria para evaluar el cumplimiento
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: rgba(0, 207, 232, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-3-circle" style="color: var(--info);"></i>
+                        </div>
+                        <div>
+                            <h6 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0; color: var(--text-primary);">
+                                Lenguaje Claro
+                            </h6>
+                            <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                                Use términos comprensibles para todos los involucrados
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Contexto -->
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(40, 199, 111, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bookmark text-success"></i>
+                    Contexto
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Norma ISO</label>
+                    <p style="font-size: 0.875rem; color: var(--text-primary); margin: 0.25rem 0 0 0; font-weight: 600;">
+                        @Model.NombreNormaIso
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Cláusula</label>
+                    <p style="font-size: 0.875rem; color: var(--text-primary); margin: 0.25rem 0 0 0;">
+                        <span class="badge badge-primary" style="font-size: 0.8125rem; padding: 0.375rem 0.625rem;">
+                            @Model.CodigoClausula
+                        </span>
+                    </p>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Descripción Cláusula</label>
+                    <p style="font-size: 0.8125rem; color: var(--text-primary); margin: 0.25rem 0 0 0; line-height: 1.5;">
+                        @Model.DescripcionClausula
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Ejemplo -->
+        <div class="card mt-4" style="background: linear-gradient(135deg, rgba(255, 159, 67, 0.08) 0%, rgba(255, 159, 67, 0.05) 100%); border: 1px solid rgba(255, 159, 67, 0.2);">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-2 mb-2">
+                    <i class="bi bi-stars" style="font-size: 1.125rem; color: var(--warning);"></i>
+                    <h6 style="margin: 0; font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">
+                        Ejemplo de Requisito
+                    </h6>
+                </div>
+                <p style="font-size: 0.8125rem; color: var(--text-primary); margin: 0; line-height: 1.5; font-style: italic;">
+                    "La organización debe establecer, implementar y mantener un proceso documentado para la identificación de peligros que sea continuo y proactivo."
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Contador de caracteres
+        const textarea = document.getElementById('descripcionTextarea');
+        const charCount = document.getElementById('charCount');
+
+        if (textarea && charCount) {
+            // Inicializar contador
+            charCount.textContent = textarea.value.length;
+
+            // Actualizar al escribir
+            textarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = length;
+
+                // Cambiar color si se acerca al límite
+                if (length > 500) {
+                    charCount.style.color = 'var(--warning)';
+                } else if (length === 550) {
+                    charCount.style.color = 'var(--danger)';
+                } else {
+                    charCount.style.color = 'var(--text-muted)';
+                }
+            });
+        }
+
+        // Auto focus en el textarea
+        document.addEventListener('DOMContentLoaded', function() {
+            textarea?.focus();
+        });
+
+        // Confirmación antes de salir si hay cambios sin guardar
+        let formModified = false;
+
+        if (textarea) {
+            const originalValue = textarea.value;
+            textarea.addEventListener('input', function() {
+                formModified = this.value !== originalValue;
+            });
+        }
+
+        document.querySelector('form')?.addEventListener('submit', function() {
+            formModified = false;
+        });
+
+        window.addEventListener('beforeunload', function(e) {
+            if (formModified) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+}

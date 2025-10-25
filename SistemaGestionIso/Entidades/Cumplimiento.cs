@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int RequisitoId { get; set; }
-        public Requisito Requisito { get; set; }
+        public Requisito? Requisito { get; set; }
         public EstadoCumplimiento Estado { get; set; }
         public DateTime Fecha { get; set; }
         public string Observaciones { get; set; } = "";

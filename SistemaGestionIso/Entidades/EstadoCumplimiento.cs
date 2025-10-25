@@ -2,6 +2,6 @@
 {
     public enum EstadoCumplimiento
     {
-        Cumple, Parcial, NoCumple
+        Cumple=0, Parcial=1, NoCumple=2
     }
 }

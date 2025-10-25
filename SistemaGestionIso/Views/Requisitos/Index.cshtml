@@ -1,7 +1,7 @@
-﻿@model ClausulaListadoViewModel
+﻿@model RequisitoListadoViewModel
 
 @{
-    ViewData["Title"] = "Todas las Cláusulas";
+    ViewData["Title"] = "Todos los Requisitos";
 }
 
 <!-- Page Header -->
@@ -10,17 +10,17 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
-                    <i class="bi bi-list-check text-primary"></i>
-                    Todas las Cláusulas
+                    <i class="bi bi-clipboard-check text-primary"></i>
+                    Todos los Requisitos
                 </h4>
                 <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
-                    Visualiza y gestiona todas las cláusulas de todas las normas ISO
+                    Visualiza y gestiona todos los requisitos de todas las cláusulas
                 </p>
             </div>
             <div class="d-flex gap-2">
-                <a asp-controller="NormasIso" asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-journal-text"></i>
-                    Ver Normas ISO
+                <a asp-controller="Clausulas" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-list-check"></i>
+                    Ver Cláusulas
                 </a>
             </div>
         </div>
@@ -37,6 +37,15 @@
     </div>
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>@TempData["Error"]</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <!-- Statistics Cards -->
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6 mb-4">
@@ -44,12 +53,30 @@
             <div class="card-body">
                 <div class="stats-card">
                     <div class="stats-info">
-                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Total Cláusulas</p>
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Total Requisitos</p>
                         <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
-                            @Model.Clausulas.Count()
+                            @Model.Requisitos.Count()
                         </h3>
                     </div>
                     <div class="stats-icon primary">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Cláusulas</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.Requisitos.Select(r => r.ClausulaId).Distinct().Count()
+                        </h3>
+                    </div>
+                    <div class="stats-icon success">
                         <i class="bi bi-list-check"></i>
                     </div>
                 </div>
@@ -62,49 +89,9 @@
             <div class="card-body">
                 <div class="stats-card">
                     <div class="stats-info">
-                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Normas ISO</p>
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Cumplimientos</p>
                         <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
-                            @Model.Clausulas.Select(c => c.NormaIsoId).Distinct().Count()
-                        </h3>
-                    </div>
-                    <div class="stats-icon success">
-                        <i class="bi bi-journal-text"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="stats-card">
-                    <div class="stats-info">
-                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Promedio por Norma</p>
-                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
-                            @{
-                                var normasCount = Model.Clausulas.Select(c => c.NormaIsoId).Distinct().Count();
-                                var promedio = normasCount > 0 ? Math.Round((double)Model.Clausulas.Count() / normasCount, 1) : 0;
-                            }
-                            @promedio
-                        </h3>
-                    </div>
-                    <div class="stats-icon warning">
-                        <i class="bi bi-graph-up"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="stats-card">
-                    <div class="stats-info">
-                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Estado</p>
-                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">
-                            Activas
+                            @Model.Requisitos.Sum(r => r.CantidadCumplimientos)
                         </h3>
                     </div>
                     <div class="stats-icon info">
@@ -114,23 +101,41 @@
             </div>
         </div>
     </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Hallazgos</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.Requisitos.Sum(r => r.CantidadHallazgos)
+                        </h3>
+                    </div>
+                    <div class="stats-icon warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Table Card -->
-@if (Model.Clausulas.Any())
+@if (Model.Requisitos.Any())
 {
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Listado de Todas las Cláusulas</h5>
-            <div class="d-flex gap-2">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="card-title mb-0">Listado de Todos los Requisitos</h5>
+            <div class="d-flex gap-2 flex-wrap">
                 <div style="position: relative;">
                     <i class="bi bi-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
                     <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar..."
-                           style="padding-left: 2.25rem; width: 250px; height: 36px;">
+                           style="padding-left: 2.25rem; width: 200px; height: 36px;">
                 </div>
-                <select id="filterNorma" class="form-select form-select-sm" style="width: 200px; height: 36px;">
+                <select id="filterNorma" class="form-select form-select-sm" style="width: 180px; height: 36px;">
                     <option value="">Todas las normas</option>
-                    @foreach (var norma in Model.Clausulas.Select(c => new { c.NormaIsoId, c.NombreNormaIso }).Distinct())
+                    @foreach (var norma in Model.Requisitos.Select(r => new { r.NormaIsoId, r.NombreNormaIso }).Distinct())
                     {
                         <option value="@norma.NormaIsoId">@norma.NombreNormaIso</option>
                     }
@@ -139,49 +144,79 @@
         </div>
         <div class="card-body" style="padding: 0;">
             <div class="table-responsive">
-                <table class="table" id="clausulasTable">
+                <table class="table" id="requisitosTable">
                     <thead>
                         <tr>
-                            <th style="width: 80px;">ORDEN</th>
-                            <th style="width: 150px;">CÓDIGO</th>
+                            <th style="width: 60px;">#</th>
                             <th>DESCRIPCIÓN</th>
-                            <th style="width: 250px;">NORMA ISO</th>
+                            <th style="width: 150px;">CLÁUSULA</th>
+                            <th style="width: 200px;">NORMA ISO</th>
+                            <th style="width: 100px; text-align: center;">CUMPL.</th>
+                            <th style="width: 100px; text-align: center;">HALLAZ.</th>
                             <th style="width: 180px; text-align: center;">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.Clausulas)
+                        @{
+                            int contador = 1;
+                        }
+                        @foreach (var item in Model.Requisitos)
                         {
                             <tr data-norma-id="@item.NormaIsoId">
                                 <td>
-                                    <span class="badge badge-primary" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                                        #@item.Orden
+                                    <span class="badge badge-secondary" style="font-size: 0.8125rem; padding: 0.375rem 0.625rem;">
+                                        @contador
+                                    </span>
+                                </td>
+                                <td style="color: var(--text-primary); max-width: 400px;">
+                                    @if (!string.IsNullOrEmpty(item.Descripcion))
+                                    {
+                                        @(item.Descripcion.Length > 120 ? item.Descripcion.Substring(0, 120) + "..." : item.Descripcion)
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Sin descripción</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge badge-primary" style="font-size: 0.8125rem; padding: 0.5rem 0.75rem;">
+                                        @item.CodigoClausula
                                     </span>
                                 </td>
                                 <td>
-                                    <strong style="color: var(--text-primary);">@item.Codigo</strong>
-                                </td>
-                                <td style="color: var(--text-primary);">
-                                    @(item.Descripcion.Length > 80 ? item.Descripcion.Substring(0, 80) + "..." : item.Descripcion)
-                                </td>
-                                <td>
-                                    <span class="badge badge-info" style="font-size: 0.8125rem; padding: 0.5rem 0.75rem;">
+                                    <span class="badge badge-info" style="font-size: 0.75rem; padding: 0.5rem 0.75rem;">
                                         @item.NombreNormaIso
                                     </span>
                                 </td>
                                 <td style="text-align: center;">
+                                    @if (item.CantidadCumplimientos > 0)
+                                    {
+                                        <span class="badge badge-success" style="font-size: 0.875rem; padding: 0.5rem 0.625rem;">
+                                            @item.CantidadCumplimientos
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted" style="font-size: 0.875rem;">0</span>
+                                    }
+                                </td>
+                                <td style="text-align: center;">
+                                    @if (item.CantidadHallazgos > 0)
+                                    {
+                                        <span class="badge badge-warning" style="font-size: 0.875rem; padding: 0.5rem 0.625rem;">
+                                            @item.CantidadHallazgos
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted" style="font-size: 0.875rem;">0</span>
+                                    }
+                                </td>
+                                <td style="text-align: center;">
                                     <div class="d-flex gap-1 justify-content-center">
-                                        <a asp-controller="Requisitos"
-                                           asp-action="Listado"
-                                           asp-route-id="@item.Id"
-                                           class="btn btn-sm btn-info"
-                                           title="Gestión de Requisitos"
-                                           style="padding: 0.375rem 0.75rem;">
-                                            <i class="bi bi-clipboard-check"></i>
-                                        </a>
-                                        <a asp-action="Listado" asp-route-id="@item.NormaIsoId"
+                                        <a asp-action="Detalles" asp-route-id="@item.Id"
                                            class="btn btn-sm btn-outline-secondary"
-                                           title="Ver cláusulas de esta norma"
+                                           title="Ver detalles"
                                            style="padding: 0.375rem 0.75rem;">
                                             <i class="bi bi-eye"></i>
                                         </a>
@@ -194,6 +229,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            contador++;
                         }
                     </tbody>
                 </table>
@@ -202,7 +238,7 @@
         <div class="card-footer" style="background-color: var(--body-bg); border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
             <div class="d-flex justify-content-between align-items-center">
                 <span style="color: var(--text-muted); font-size: 0.875rem;">
-                    Mostrando <strong id="visibleCount">@Model.Clausulas.Count()</strong> de <strong>@Model.Clausulas.Count()</strong> cláusulas
+                    Mostrando <strong id="visibleCount">@Model.Requisitos.Count()</strong> de <strong>@Model.Requisitos.Count()</strong> requisitos
                 </span>
             </div>
         </div>
@@ -216,14 +252,14 @@ else
                 <i class="bi bi-inbox" style="font-size: 2.5rem; color: var(--primary);"></i>
             </div>
             <h5 style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem;">
-                No hay cláusulas registradas
+                No hay requisitos registrados
             </h5>
             <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-                Comience creando una norma ISO y luego agregue sus cláusulas
+                Comience agregando requisitos a las cláusulas de sus normas ISO
             </p>
-            <a asp-controller="NormasIso" asp-action="Index" class="btn btn-primary">
-                <i class="bi bi-journal-text"></i>
-                Ver Normas ISO
+            <a asp-controller="Clausulas" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-list-check"></i>
+                Ver Cláusulas
             </a>
         </div>
     </div>
@@ -234,7 +270,7 @@ else
         // Búsqueda y filtrado
         const searchInput = document.getElementById('searchInput');
         const filterNorma = document.getElementById('filterNorma');
-        const tableRows = document.querySelectorAll('#clausulasTable tbody tr');
+        const tableRows = document.querySelectorAll('#requisitosTable tbody tr');
         const visibleCount = document.getElementById('visibleCount');
 
         function filterTable() {
