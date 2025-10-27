@@ -1,0 +1,379 @@
+﻿@using SistemaGestionIso.Models.Evidencia
+@model EvidenciaListadoViewModel
+
+@{
+    ViewData["Title"] = "Todas las Evidencias";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    <i class="bi bi-paperclip text-primary"></i>
+                    Gestión de Evidencias
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Visualiza y gestiona todos los archivos de evidencia del sistema
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="Cumplimientos" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-check-circle"></i>
+                    Ver Cumplimientos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span>@Model.Mensaje</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>@TempData["Error"]</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Total Evidencias</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.Evidencias.Count()
+                        </h3>
+                    </div>
+                    <div class="stats-icon primary">
+                        <i class="bi bi-file-earmark"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Documentos PDF</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.Evidencias.Count(e => System.IO.Path.GetExtension(e.NombreArchivo).ToLower() == ".pdf")
+                        </h3>
+                    </div>
+                    <div class="stats-icon danger">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Imágenes</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @{
+                                var imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                                var imageCount = Model.Evidencias.Count(e => imageExtensions.Contains(System.IO.Path.GetExtension(e.NombreArchivo).ToLower()));
+                            }
+                            @imageCount
+                        </h3>
+                    </div>
+                    <div class="stats-icon success">
+                        <i class="bi bi-file-earmark-image"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Otros Archivos</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @{
+                                var otherExtensions = new[] { ".doc", ".docx", ".xls", ".xlsx", ".zip", ".rar" };
+                                var otherCount = Model.Evidencias.Count(e => otherExtensions.Contains(System.IO.Path.GetExtension(e.NombreArchivo).ToLower()));
+                            }
+                            @otherCount
+                        </h3>
+                    </div>
+                    <div class="stats-icon info">
+                        <i class="bi bi-file-earmark-zip"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Table -->
+@if (Model.Evidencias.Any())
+{
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="card-title mb-0">Listado de Evidencias</h5>
+            <div class="d-flex gap-2 flex-wrap">
+                <div style="position: relative;">
+                    <i class="bi bi-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar..."
+                           style="padding-left: 2.25rem; width: 200px; height: 36px;">
+                </div>
+                <select id="filterTipo" class="form-select form-select-sm" style="width: 150px; height: 36px;">
+                    <option value="">Todos los tipos</option>
+                    <option value=".pdf">PDF</option>
+                    <option value=".doc,.docx">Word</option>
+                    <option value=".xls,.xlsx">Excel</option>
+                    <option value=".jpg,.jpeg,.png">Imágenes</option>
+                    <option value=".zip,.rar">Comprimidos</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="table" id="evidenciasTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th style="width: 80px; text-align: center;">TIPO</th>
+                            <th>ARCHIVO</th>
+                            <th style="width: 200px;">REQUISITO</th>
+                            <th style="width: 120px;">CLÁUSULA</th>
+                            <th style="width: 150px;">NORMA ISO</th>
+                            <th style="width: 130px;">FECHA</th>
+                            <th style="width: 150px;">USUARIO</th>
+                            <th style="width: 180px; text-align: center;">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int contador = 1;
+                        }
+                        @foreach (var item in Model.Evidencias)
+                        {
+                            var extension = System.IO.Path.GetExtension(item.NombreArchivo).ToLower();
+                            var icono = extension switch
+                            {
+                                ".pdf" => "bi-file-earmark-pdf",
+                                ".doc" or ".docx" => "bi-file-earmark-word",
+                                ".xls" or ".xlsx" => "bi-file-earmark-excel",
+                                ".jpg" or ".jpeg" or ".png" or ".gif" => "bi-file-earmark-image",
+                                ".zip" or ".rar" => "bi-file-earmark-zip",
+                                _ => "bi-file-earmark"
+                            };
+                            var colorIcono = extension switch
+                            {
+                                ".pdf" => "danger",
+                                ".doc" or ".docx" => "primary",
+                                ".xls" or ".xlsx" => "success",
+                                ".jpg" or ".jpeg" or ".png" or ".gif" => "warning",
+                                ".zip" or ".rar" => "info",
+                                _ => "secondary"
+                            };
+
+                            <tr data-tipo="@extension">
+                                <td>
+                                    <span class="badge badge-secondary" style="font-size: 0.8125rem; padding: 0.375rem 0.625rem;">
+                                        @contador
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <i class="bi @icono text-@colorIcono" style="font-size: 1.5rem;"></i>
+                                </td>
+                                <td style="color: var(--text-primary);">
+                                    <strong>@item.NombreArchivo</strong>
+                                    <br>
+                                    <small class="text-muted">@extension.ToUpper().TrimStart('.')</small>
+                                </td>
+                                <td style="color: var(--text-primary); font-size: 0.875rem;">
+                                    @if (!string.IsNullOrEmpty(item.DescripcionRequisito))
+                                    {
+                                        @(item.DescripcionRequisito.Length > 50 ? item.DescripcionRequisito.Substring(0, 50) + "..." : item.DescripcionRequisito)
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge badge-primary" style="font-size: 0.8125rem; padding: 0.375rem 0.625rem;">
+                                        @item.CodigoClausula
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info" style="font-size: 0.75rem; padding: 0.375rem 0.625rem;">
+                                        @item.NombreNormaIso
+                                    </span>
+                                </td>
+                                <td style="color: var(--text-primary); font-size: 0.875rem;">
+                                    @item.FechaSubida.ToString("dd/MM/yyyy")
+                                    <br>
+                                    <small class="text-muted">@item.FechaSubida.ToString("HH:mm")</small>
+                                </td>
+                                <td style="color: var(--text-primary); font-size: 0.875rem;">
+                                    <i class="bi bi-person-circle" style="color: var(--primary);"></i>
+                                    @item.NombreUsuario
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <a asp-controller="Cumplimientos"
+                                           asp-action="Detalles"
+                                           asp-route-id="@item.CumplimientoId"
+                                           class="btn btn-sm btn-outline-secondary"
+                                           title="Ver cumplimiento"
+                                           style="padding: 0.375rem 0.75rem;">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Descargar" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-primary"
+                                           title="Descargar"
+                                           style="padding: 0.375rem 0.75rem;">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger"
+                                                title="Eliminar"
+                                                style="padding: 0.375rem 0.75rem;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal-@item.Id">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Modal de Confirmación de Eliminación -->
+                                    <div class="modal fade" id="deleteModal-@item.Id" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content" style="border-radius: 0.75rem; border: none;">
+                                                <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem;">
+                                                    <h5 class="modal-title" style="color: var(--text-primary); font-weight: 600;">
+                                                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                                                        Confirmar Eliminación
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body" style="padding: 1.5rem;">
+                                                    <p style="margin: 0; color: var(--text-primary);">
+                                                        ¿Está seguro de que desea eliminar la evidencia <strong>"@item.NombreArchivo"</strong>?
+                                                    </p>
+                                                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.875rem;">
+                                                        Esta acción no se puede deshacer y el archivo se eliminará permanentemente del servidor.
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                        Cancelar
+                                                    </button>
+                                                    <form asp-action="Eliminar" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="bi bi-trash"></i>
+                                                            Eliminar
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            contador++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: var(--body-bg); border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+            <div class="d-flex justify-content-between align-items-center">
+                <span style="color: var(--text-muted); font-size: 0.875rem;">
+                    Mostrando <strong id="visibleCount">@Model.Evidencias.Count()</strong> de <strong>@Model.Evidencias.Count()</strong> evidencias
+                </span>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center" style="padding: 3rem 1.5rem;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: rgba(115, 103, 240, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-inbox" style="font-size: 2.5rem; color: var(--primary);"></i>
+            </div>
+            <h5 style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem;">
+                No hay evidencias registradas
+            </h5>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Las evidencias se subirán automáticamente cuando se registren cumplimientos
+            </p>
+            <a asp-controller="Cumplimientos" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i>
+                Ver Cumplimientos
+            </a>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Búsqueda y filtrado
+        const searchInput = document.getElementById('searchInput');
+        const filterTipo = document.getElementById('filterTipo');
+        const tableRows = document.querySelectorAll('#evidenciasTable tbody tr');
+        const visibleCount = document.getElementById('visibleCount');
+
+        function filterTable() {
+            const searchValue = searchInput?.value.toLowerCase() || '';
+            const tipoValue = filterTipo?.value || '';
+            let visibleRows = 0;
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const tipo = row.getAttribute('data-tipo');
+
+                const matchSearch = text.includes(searchValue);
+                const matchTipo = tipoValue === '' || tipoValue.split(',').includes(tipo);
+
+                if (matchSearch && matchTipo) {
+                    row.style.display = '';
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (visibleCount) {
+                visibleCount.textContent = visibleRows;
+            }
+        }
+
+        searchInput?.addEventListener('keyup', filterTable);
+        filterTipo?.addEventListener('change', filterTable);
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}

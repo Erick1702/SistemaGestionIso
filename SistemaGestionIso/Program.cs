@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,12 @@ var politicaUsuarioAutenticados = new AuthorizationPolicyBuilder()
     .Build();
 
 // Add services to the container.
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10485760; // 10 MB
+});
+
 builder.Services.AddControllersWithViews(opciones =>
 {
     opciones.Filters.Add(new AuthorizeFilter(politicaUsuarioAutenticados));
@@ -51,6 +58,8 @@ builder.Services.PostConfigure<CookieAuthenticationOptions>(IdentityConstants.Ap
     opciones.AccessDeniedPath = "/Usuarios/AccesoDenegado";
     
 });
+
+
 
 var app = builder.Build();
 
