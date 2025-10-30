@@ -1,0 +1,333 @@
+﻿@model SistemaGestionIso.Models.Hallazgo.HallazgoCrearEditarViewModel
+
+@{
+    ViewData["Title"] = "Editar Hallazgo";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: transparent; padding: 0; margin-bottom: 1rem;">
+                <li class="breadcrumb-item">
+                    <a asp-controller="Home" asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        <i class="bi bi-house-door"></i> Inicio
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Auditorias" asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        Auditorías
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Auditorias" asp-action="Detalles" asp-route-id="@Model.AuditoriaId" style="color: var(--primary); text-decoration: none;">
+                        Detalles
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-action="Detalles" asp-route-id="@Model.Id" style="color: var(--primary); text-decoration: none;">
+                        Hallazgo
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" style="color: var(--text-muted);">
+                    Editar
+                </li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    Editar Hallazgo
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Modifique la información del hallazgo
+                </p>
+            </div>
+            <a asp-action="Detalles" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i>
+                Volver a Detalles
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Auditoria Info Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" style="background: linear-gradient(135deg, rgba(115, 103, 240, 0.08) 0%, rgba(158, 149, 245, 0.08) 100%); border: 1px solid rgba(115, 103, 240, 0.2);">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div style="width: 48px; height: 48px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                        <i class="bi bi-clipboard-data"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h5 style="margin: 0 0 0.5rem 0; color: var(--text-primary); font-weight: 600;">
+                            Auditoría: @Model.AreaAuditada
+                        </h5>
+                        <p style="margin: 0; color: var(--text-primary);">
+                            Tipo: <strong>@Model.TipoAuditoria</strong> |
+                            Requisito: <strong>@Model.CodigoClausula - @Model.DescripcionRequisito</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0" style="color: var(--text-primary); font-weight: 600;">
+                    <i class="bi bi-pencil-square text-primary"></i>
+                    Editar Información del Hallazgo
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Editar" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="AuditoriaId" />
+                    <input type="hidden" asp-for="EvidenciaPath" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Tipo de Hallazgo -->
+                    <div class="mb-3">
+                        <label asp-for="Tipo" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);"></label>
+                        <div style="position: relative;">
+                            <i class="bi bi-tag" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 10;"></i>
+                            <select asp-for="Tipo" class="form-control" style="padding-left: 2.25rem;">
+                                <option value="">Seleccione un tipo</option>
+                                <option value="Conformidad">Conformidad</option>
+                                <option value="No Conformidad">No Conformidad</option>
+                                <option value="Observación">Observación</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="Tipo" class="invalid-feedback"></span>
+                    </div>
+
+                    <!-- Requisito -->
+                    <div class="mb-3">
+                        <label asp-for="RequisitoId" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);"></label>
+                        <div style="position: relative;">
+                            <i class="bi bi-list-check" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 10;"></i>
+                            <select asp-for="RequisitoId" asp-items="@ViewBag.Requisitos" class="form-control" style="padding-left: 2.25rem;">
+                                <option value="">Seleccione un requisito</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="RequisitoId" class="invalid-feedback"></span>
+                        @if (!string.IsNullOrEmpty(Model.DescripcionRequisito))
+                        {
+                            <small class="form-text" style="color: var(--text-muted); font-size: 0.8125rem;">
+                                <i class="bi bi-info-circle text-info"></i>
+                                Requisito actual: <strong>@Model.CodigoClausula - @Model.DescripcionRequisito</strong>
+                            </small>
+                        }
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label asp-for="Descripcion" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);"></label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="5" placeholder="Describa detalladamente el hallazgo encontrado..."></textarea>
+                        <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
+                        <small class="form-text" style="color: var(--text-muted); font-size: 0.8125rem;">
+                            Describa el hallazgo de forma clara y detallada (máximo 1000 caracteres)
+                        </small>
+                    </div>
+
+                    <!-- Evidencia Actual -->
+                    @if (!string.IsNullOrEmpty(Model.EvidenciaPath))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">Evidencia Actual</label>
+                            <div class="alert alert-info" style="background-color: rgba(0, 207, 232, 0.12); border-color: var(--info); color: var(--info); padding: 0.75rem 1rem;">
+                                <i class="bi bi-paperclip"></i>
+                                <span>Archivo actual: <strong>@System.IO.Path.GetFileName(Model.EvidenciaPath)</strong></span>
+                                <a asp-action="DescargarEvidencia" asp-route-id="@Model.Id" class="btn btn-sm btn-info" style="margin-left: 1rem; padding: 0.25rem 0.75rem;">
+                                    <i class="bi bi-download"></i> Descargar
+                                </a>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Nueva Evidencia -->
+                    <div class="mb-3">
+                        <label asp-for="EvidenciaArchivo" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">
+                            @(!string.IsNullOrEmpty(Model.EvidenciaPath) ? "Reemplazar Evidencia (Opcional)" : "Agregar Evidencia (Opcional)")
+                        </label>
+                        <input asp-for="EvidenciaArchivo" type="file" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.zip,.rar" />
+                        <span asp-validation-for="EvidenciaArchivo" class="invalid-feedback"></span>
+                        <small class="form-text" style="color: var(--text-muted); font-size: 0.8125rem;">
+                            @if (!string.IsNullOrEmpty(Model.EvidenciaPath))
+                            {
+                                <text>Si carga un nuevo archivo, reemplazará el archivo actual.</text>
+                            }
+                            else
+                            {
+                                <text>Formatos permitidos: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, ZIP, RAR (máximo 10 MB)</text>
+                            }
+                        </small>
+                    </div>
+
+                    <!-- Alerta de Información -->
+                    <div class="alert alert-warning" style="background-color: rgba(255, 159, 67, 0.12); border-color: var(--warning); color: var(--warning);">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Importante:</strong> Los cambios afectarán únicamente este hallazgo. La auditoría no se verá modificada.
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a asp-action="Listado" asp-route-id="@Model.AuditoriaId" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Lateral -->
+    <div class="col-lg-4">
+        <!-- Información Actual -->
+        <div class="card" style="background: linear-gradient(135deg, rgba(115, 103, 240, 0.08) 0%, rgba(158, 149, 245, 0.08) 100%); border: 1px solid rgba(115, 103, 240, 0.2);">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div style="width: 48px; height: 48px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h5 style="margin: 0 0 0.75rem 0; color: var(--text-primary); font-weight: 600;">
+                            Información Actual
+                        </h5>
+                        <div style="margin-bottom: 0.75rem;">
+                            <small style="color: var(--text-muted); font-size: 0.8125rem;">ID de Hallazgo</small>
+                            <p style="margin: 0.125rem 0 0 0; color: var(--text-primary); font-weight: 600;">#@Model.Id</p>
+                        </div>
+                        <div style="margin-bottom: 0.75rem;">
+                            <small style="color: var(--text-muted); font-size: 0.8125rem;">Norma ISO</small>
+                            <p style="margin: 0.125rem 0 0 0; color: var(--text-primary);">@Model.NombreNormaIso</p>
+                        </div>
+                        <div>
+                            <small style="color: var(--text-muted); font-size: 0.8125rem;">Cláusula</small>
+                            <p style="margin: 0.125rem 0 0 0;">
+                                <span class="badge badge-info" style="font-size: 0.8125rem; padding: 0.5rem 0.75rem;">
+                                    @Model.CodigoClausula
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consideraciones -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0" style="color: var(--text-primary); font-weight: 600;">
+                    <i class="bi bi-lightbulb text-warning"></i>
+                    Consideraciones
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.875rem; line-height: 1.8; color: var(--text-secondary);">
+                    <li>Verifique que la descripción sea clara y precisa</li>
+                    <li>Si cambia el requisito, asegúrese que sea el correcto</li>
+                    <li>La evidencia anterior se eliminará si carga una nueva</li>
+                    <li>Puede regresar sin guardar usando "Cancelar"</li>
+                </ul>
+
+                <div class="alert alert-info" style="margin: 1rem 0 0 0; font-size: 0.8125rem; padding: 0.75rem; background-color: rgba(0, 207, 232, 0.12); border-color: var(--info); color: var(--info);">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Tip:</strong> Mantenga un registro detallado de las evidencias para facilitar el seguimiento.
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0" style="color: var(--text-primary); font-weight: 600;">
+                    <i class="bi bi-lightning text-warning"></i>
+                    Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <a asp-action="Detalles" asp-route-id="@Model.Id" class="btn btn-info btn-sm w-100 mb-2">
+                    <i class="bi bi-eye"></i>
+                    Ver Detalles
+                </a>
+                <a asp-action="Listado" asp-route-id="@Model.AuditoriaId" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="bi bi-list"></i>
+                    Ver Todos los Hallazgos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Contador de caracteres para descripción
+        document.addEventListener('DOMContentLoaded', function() {
+            const descripcionInput = document.getElementById('@Html.IdFor(m => m.Descripcion)');
+
+            if (descripcionInput) {
+                const maxLength = 1000;
+                const counterDiv = document.createElement('div');
+                counterDiv.style.cssText = 'font-size: 0.8125rem; color: var(--text-muted); text-align: right; margin-top: 0.25rem;';
+
+                function updateCounter() {
+                    const remaining = maxLength - descripcionInput.value.length;
+                    counterDiv.textContent = `${descripcionInput.value.length}/${maxLength} caracteres`;
+                    if (remaining < 100) {
+                        counterDiv.style.color = 'var(--warning)';
+                    } else {
+                        counterDiv.style.color = 'var(--text-muted)';
+                    }
+                }
+
+                descripcionInput.parentNode.appendChild(counterDiv);
+                descripcionInput.addEventListener('input', updateCounter);
+                updateCounter();
+            }
+
+            // Validar tamaño de archivo
+            const fileInput = document.getElementById('@Html.IdFor(m => m.EvidenciaArchivo)');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files[0]) {
+                        const fileSize = this.files[0].size / 1024 / 1024; // en MB
+                        if (fileSize > 10) {
+                            alert('El archivo no puede superar los 10 MB');
+                            this.value = '';
+                        }
+                    }
+                });
+            }
+
+            // Confirmación antes de salir con cambios sin guardar
+            let formModified = false;
+            const formElements = document.querySelectorAll('input, select, textarea');
+
+            formElements.forEach(element => {
+                element.addEventListener('change', function() {
+                    formModified = true;
+                });
+            });
+
+            // No mostrar alerta al enviar el formulario
+            document.querySelector('form').addEventListener('submit', function() {
+                formModified = false;
+            });
+        });
+    </script>
+}

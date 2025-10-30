@@ -1,0 +1,405 @@
+﻿@model SistemaGestionIso.Models.Auditoria.AuditoriaListadoViewModel
+
+@{
+    ViewData["Title"] = "Gestión de Auditorías";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: transparent; padding: 0; margin-bottom: 1rem;">
+                <li class="breadcrumb-item">
+                    <a asp-controller="Home" asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        <i class="bi bi-house-door"></i> Inicio
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" style="color: var(--text-muted);">
+                    Auditorías
+                </li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    <i class="bi bi-clipboard-check text-primary"></i>
+                    Gestión de Auditorías
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Planifica y gestiona las auditorías del Sistema de Gestión ISO
+                </p>
+            </div>
+            @if (User.IsInRole("Administrador") || User.IsInRole("Encargado SIG"))
+            {
+                <a asp-action="Crear" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Nueva Auditoría
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span>@Model.Mensaje</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>@TempData["Error"]</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Total Auditorías</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.TotalAuditorias
+                        </h3>
+                    </div>
+                    <div class="stats-icon primary">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Programadas</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.AuditoriasProgramadas
+                        </h3>
+                    </div>
+                    <div class="stats-icon info">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">En Progreso</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.AuditoriasEnProgreso
+                        </h3>
+                    </div>
+                    <div class="stats-icon warning">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <p style="margin: 0 0 0.25rem 0; color: var(--text-muted); font-size: 0.875rem;">Total Hallazgos</p>
+                        <h3 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
+                            @Model.TotalHallazgos
+                        </h3>
+                    </div>
+                    <div class="stats-icon danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table Card -->
+@if (Model.Auditorias.Any())
+{
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Listado de Auditorías</h5>
+            <div style="position: relative;">
+                <i class="bi bi-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar..."
+                       style="padding-left: 2.25rem; width: 200px; height: 36px;">
+            </div>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="table" id="auditoriasTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 200px;">ÁREA AUDITADA</th>
+                            <th style="width: 150px;">TIPO</th>
+                            <th style="width: 110px;">FECHA INICIO</th>
+                            <th style="width: 110px;">FECHA FIN</th>
+                            <th>AUDITOR</th>
+                            <th style="width: 120px; text-align: center;">ESTADO</th>
+                            <th style="width: 140px; text-align: center;">HALLAZGOS</th>
+                            <th style="width: 200px; text-align: center;">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var auditoria in Model.Auditorias)
+                        {
+                            <tr>
+                                <td style="color: var(--text-primary);">
+                                    <strong>@auditoria.AreaAuditada</strong>
+                                </td>
+                                <td>
+                                    <span class="badge badge-secondary" style="font-size: 0.8125rem; padding: 0.5rem 0.75rem;">
+                                        @auditoria.TipoAuditoria
+                                    </span>
+                                </td>
+                                <td style="color: var(--text-primary);">
+                                    @auditoria.FechaIni.ToString("dd/MM/yyyy")
+                                </td>
+                                <td style="color: var(--text-primary);">
+                                    @auditoria.FechaFin.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(auditoria.NombreAuditor))
+                                    {
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="navbar-user-avatar" style="width: 32px; height: 32px; font-size: 0.75rem; flex-shrink: 0;">
+                                                @auditoria.NombreAuditor.Substring(0, 1)
+                                            </div>
+                                            <div style="min-width: 0;">
+                                                <div style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">@auditoria.NombreAuditor</div>
+                                                @if (!string.IsNullOrEmpty(auditoria.EmailAuditor))
+                                                {
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@auditoria.EmailAuditor</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No asignado</span>
+                                    }
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="badge badge-@auditoria.ColorEstado" style="font-size: 0.8125rem; padding: 0.5rem 0.75rem;">
+                                        @auditoria.EstadoAuditoria
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div style="display: flex; gap: 0.375rem; justify-content: center; flex-wrap: wrap;">
+                                        <span class="badge badge-primary" title="Total" style="font-size: 0.75rem; padding: 0.375rem 0.5rem;">
+                                            <i class="bi bi-list"></i> @auditoria.CantidadHallazgos
+                                        </span>
+                                        @if (auditoria.CantidadNoConformidades > 0)
+                                        {
+                                            <span class="badge badge-danger" title="No Conformidades" style="font-size: 0.75rem; padding: 0.375rem 0.5rem;">
+                                                <i class="bi bi-x-circle"></i> @auditoria.CantidadNoConformidades
+                                            </span>
+                                        }
+                                        @if (auditoria.CantidadObservaciones > 0)
+                                        {
+                                            <span class="badge badge-warning" title="Observaciones" style="font-size: 0.75rem; padding: 0.375rem 0.5rem;">
+                                                <i class="bi bi-exclamation-circle"></i> @auditoria.CantidadObservaciones
+                                            </span>
+                                        }
+                                        @if (auditoria.CantidadConformidades > 0)
+                                        {
+                                            <span class="badge badge-success" title="Conformidades" style="font-size: 0.75rem; padding: 0.375rem 0.5rem;">
+                                                <i class="bi bi-check-circle"></i> @auditoria.CantidadConformidades
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <a asp-action="Detalles" asp-route-id="@auditoria.Id"
+                                           class="btn btn-sm btn-info"
+                                           title="Ver Detalles"
+                                           style="padding: 0.375rem 0.75rem;">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        @if (User.IsInRole("Administrador") || User.IsInRole("Encargado SIG"))
+                                        {
+                                            <a asp-action="Editar" asp-route-id="@auditoria.Id"
+                                               class="btn btn-sm btn-primary"
+                                               title="Editar"
+                                               style="padding: 0.375rem 0.75rem;">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        }
+                                        @if (User.IsInRole("Administrador"))
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-danger"
+                                                    title="Eliminar"
+                                                    style="padding: 0.375rem 0.75rem;"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal-@auditoria.Id">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+
+                                    <!-- Modal de Confirmación de Eliminación -->
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        <div class="modal fade" id="deleteModal-@auditoria.Id" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content" style="border-radius: 0.75rem; border: none;">
+                                                    <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem;">
+                                                        <h5 class="modal-title" style="color: var(--text-primary); font-weight: 600;">
+                                                            <i class="bi bi-exclamation-triangle text-warning"></i>
+                                                            Confirmar Eliminación
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body" style="padding: 1.5rem;">
+                                                        <p style="margin: 0; color: var(--text-primary);">
+                                                            ¿Está seguro de que desea eliminar la auditoría <strong>@auditoria.AreaAuditada</strong>?
+                                                        </p>
+                                                        @if (auditoria.CantidadHallazgos > 0)
+                                                        {
+                                                            <div class="alert alert-warning" style="margin-top: 1rem; margin-bottom: 0;">
+                                                                <i class="bi bi-exclamation-triangle"></i>
+                                                                Esta auditoría tiene <strong>@auditoria.CantidadHallazgos hallazgo(s)</strong> registrado(s).
+                                                                Debe eliminarlos primero.
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.875rem;">
+                                                                Esta acción no se puede deshacer.
+                                                            </p>
+                                                        }
+                                                    </div>
+                                                    <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                            Cancelar
+                                                        </button>
+                                                        <form asp-action="Eliminar" asp-route-id="@auditoria.Id" method="post" style="display:inline;">
+                                                            @Html.AntiForgeryToken()
+                                                            <button type="submit" class="btn btn-danger" @(auditoria.CantidadHallazgos > 0 ? "disabled" : "")>
+                                                                <i class="bi bi-trash"></i>
+                                                                Eliminar
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: var(--body-bg); border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+            <div class="d-flex justify-content-between align-items-center">
+                <span style="color: var(--text-muted); font-size: 0.875rem;">
+                    Mostrando <strong>@Model.Auditorias.Count()</strong> auditorías
+                </span>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center" style="padding: 3rem 1.5rem;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: rgba(115, 103, 240, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-clipboard-x" style="font-size: 2.5rem; color: var(--primary);"></i>
+            </div>
+            <h5 style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem;">
+                No hay auditorías registradas
+            </h5>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                Comience agregando una nueva auditoría para el Sistema de Gestión ISO
+            </p>
+            @if (User.IsInRole("Administrador") || User.IsInRole("Encargado SIG"))
+            {
+                <a asp-action="Crear" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Crear Primera Auditoría
+                </a>
+            }
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Búsqueda en tiempo real
+        document.getElementById('searchInput')?.addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#auditoriasTable tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}
+tion Scripts {
+    <script>
+        // Búsqueda en tiempo real
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#auditoriasTable tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+
+        // Confirmación de eliminación
+        function confirmarEliminar(id, area) {
+            document.getElementById('areaNombre').textContent = area;
+            document.getElementById('formEliminar').action = '@Url.Action("Eliminar", "Auditorias")/' + id;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+            modal.show();
+        }
+
+        // Auto-ocultar alertas después de 5 segundos
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}

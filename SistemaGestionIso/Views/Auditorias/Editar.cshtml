@@ -1,0 +1,291 @@
+﻿@model SistemaGestionIso.Models.Auditoria.AuditoriaCrearEditarViewModel
+
+@{
+    ViewData["Title"] = "Editar Auditoría";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: transparent; padding: 0; margin-bottom: 1rem;">
+                <li class="breadcrumb-item">
+                    <a asp-controller="Home" asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        <i class="bi bi-house-door"></i> Inicio
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        Auditorías
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-action="Detalles" asp-route-id="@Model.Id" style="color: var(--primary); text-decoration: none;">
+                        Detalles
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" style="color: var(--text-muted);">
+                    Editar
+                </li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    Editar Auditoría
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Modifique la información de la auditoría
+                </p>
+            </div>
+            <a asp-action="Detalles" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i>
+                Volver a Detalles
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0" style="color: var(--text-primary); font-weight: 600;">
+                    <i class="bi bi-pencil-square text-primary"></i>
+                    Editar Información de la Auditoría
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Editar" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row">
+                        <!-- Área Auditada -->
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AreaAuditada" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);"></label>
+                            <div style="position: relative;">
+                                <i class="bi bi-building" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                <input asp-for="AreaAuditada" class="form-control" placeholder="Ej: Producción, RRHH..." style="padding-left: 2.25rem;" />
+                            </div>
+                            <span asp-validation-for="AreaAuditada" class="invalid-feedback"></span>
+                        </div>
+
+                        <!-- Tipo de Auditoría -->
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TipoAuditoria" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);"></label>
+                            <div style="position: relative;">
+                                <i class="bi bi-clipboard-data" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 10;"></i>
+                                <select asp-for="TipoAuditoria" class="form-control" style="padding-left: 2.25rem;">
+                                    <option value="">Seleccione un tipo</option>
+                                    <option value="Interna">Interna</option>
+                                    <option value="Externa">Externa</option>
+                                    <option value="De Proveedores">De Proveedores</option>
+                                    <option value="De Seguimiento">De Seguimiento</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="TipoAuditoria" class="invalid-feedback"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Fecha Inicio -->
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FechaIni" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);"></label>
+                            <div style="position: relative;">
+                                <i class="bi bi-calendar-event" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                <input asp-for="FechaIni" type="date" class="form-control" style="padding-left: 2.25rem;" />
+                            </div>
+                            <span asp-validation-for="FechaIni" class="invalid-feedback"></span>
+                            <small class="form-text" style="color: var(--text-muted); font-size: 0.8125rem;">Fecha en que inicia la auditoría</small>
+                        </div>
+
+                        <!-- Fecha Fin -->
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FechaFin" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);"></label>
+                            <div style="position: relative;">
+                                <i class="bi bi-calendar-check" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                <input asp-for="FechaFin" type="date" class="form-control" style="padding-left: 2.25rem;" />
+                            </div>
+                            <span asp-validation-for="FechaFin" class="invalid-feedback"></span>
+                            <small class="form-text" style="color: var(--text-muted); font-size: 0.8125rem;">Fecha en que finaliza la auditoría</small>
+                        </div>
+                    </div>
+
+                    <!-- Auditor Responsable -->
+                    <div class="mb-3">
+                        <label asp-for="UsuarioId" class="form-label" style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);"></label>
+                        <div style="position: relative;">
+                            <i class="bi bi-person-badge" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 10;"></i>
+                            <select asp-for="UsuarioId" asp-items="@ViewBag.Usuarios" class="form-control" style="padding-left: 2.25rem;">
+                                <option value="">Seleccione un auditor</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="UsuarioId" class="invalid-feedback"></span>
+                        @if (!string.IsNullOrEmpty(Model.NombreAuditor))
+                        {
+                            <small class="form-text" style="color: var(--text-muted); font-size: 0.8125rem;">
+                                <i class="bi bi-info-circle text-info"></i>
+                                Auditor actual: <strong>@Model.NombreAuditor</strong>
+                            </small>
+                        }
+                    </div>
+
+                    <!-- Alerta de Información -->
+                    <div class="alert alert-warning" style="background-color: rgba(255, 159, 67, 0.12); border-color: var(--warning); color: var(--warning);">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Importante:</strong> Los cambios afectarán únicamente la información de la auditoría. Los hallazgos ya registrados no se verán afectados.
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Lateral -->
+    <div class="col-lg-4">
+        <!-- Información de la Auditoría -->
+        <div class="card" style="background: linear-gradient(135deg, rgba(115, 103, 240, 0.08) 0%, rgba(158, 149, 245, 0.08) 100%); border: 1px solid rgba(115, 103, 240, 0.2);">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div style="width: 48px; height: 48px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h5 style="margin: 0 0 0.75rem 0; color: var(--text-primary); font-weight: 600;">
+                            Información Actual
+                        </h5>
+                        <div style="margin-bottom: 0.75rem;">
+                            <small style="color: var(--text-muted); font-size: 0.8125rem;">ID de Auditoría</small>
+                            <p style="margin: 0.125rem 0 0 0; color: var(--text-primary); font-weight: 600;">#@Model.Id</p>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.NombreAuditor))
+                        {
+                            <div>
+                                <small style="color: var(--text-muted); font-size: 0.8125rem;">Auditor Asignado</small>
+                                <div class="d-flex align-items-center gap-2" style="margin-top: 0.25rem;">
+                                    <div class="navbar-user-avatar" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                        @Model.NombreAuditor.Substring(0, 1)
+                                    </div>
+                                    <strong style="color: var(--text-primary);">@Model.NombreAuditor</strong>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consideraciones -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0" style="color: var(--text-primary); font-weight: 600;">
+                    <i class="bi bi-lightbulb text-warning"></i>
+                    Consideraciones
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.875rem; line-height: 1.8; color: var(--text-secondary);">
+                    <li>Verifica que las fechas sean correctas</li>
+                    <li>Si cambias el auditor, notifícale sobre su asignación</li>
+                    <li>Los hallazgos registrados se mantienen intactos</li>
+                    <li>Puedes regresar sin guardar usando "Cancelar"</li>
+                </ul>
+
+                <div class="alert alert-info" style="margin: 1rem 0 0 0; font-size: 0.8125rem; padding: 0.75rem; background-color: rgba(0, 207, 232, 0.12); border-color: var(--info); color: var(--info);">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Tip:</strong> Si necesitas modificar hallazgos, hazlo desde la vista de detalles de la auditoría.
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0" style="color: var(--text-primary); font-weight: 600;">
+                    <i class="bi bi-lightning text-warning"></i>
+                    Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <a asp-action="Detalles" asp-route-id="@Model.Id" class="btn btn-info btn-sm w-100 mb-2">
+                    <i class="bi bi-eye"></i>
+                    Ver Detalles
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="bi bi-list"></i>
+                    Ver Todas las Auditorías
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Validación de fechas en tiempo real
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaIni = document.getElementById('@Html.IdFor(m => m.FechaIni)');
+            const fechaFin = document.getElementById('@Html.IdFor(m => m.FechaFin)');
+
+            function validarFechas() {
+                if (fechaIni.value && fechaFin.value) {
+                    const inicio = new Date(fechaIni.value);
+                    const fin = new Date(fechaFin.value);
+
+                    if (fin < inicio) {
+                        fechaFin.classList.add('is-invalid');
+
+                        let errorMsg = fechaFin.parentElement.parentElement.querySelector('.invalid-feedback');
+                        if (!errorMsg) {
+                            errorMsg = document.createElement('span');
+                            errorMsg.className = 'invalid-feedback';
+                            fechaFin.parentElement.parentElement.appendChild(errorMsg);
+                        }
+                        errorMsg.textContent = 'La fecha de fin no puede ser anterior a la fecha de inicio';
+                        errorMsg.style.display = 'block';
+                    } else {
+                        fechaFin.classList.remove('is-invalid');
+                        const errorMsg = fechaFin.parentElement.parentElement.querySelector('.invalid-feedback');
+                        if (errorMsg) {
+                            errorMsg.style.display = 'none';
+                        }
+                    }
+                }
+            }
+
+            fechaIni.addEventListener('change', validarFechas);
+            fechaFin.addEventListener('change', validarFechas);
+
+            // Confirmación antes de salir con cambios sin guardar
+            let formModified = false;
+            const formElements = document.querySelectorAll('input, select, textarea');
+
+            formElements.forEach(element => {
+                element.addEventListener('change', function() {
+                    formModified = true;
+                });
+            });
+
+            // No mostrar alerta al enviar el formulario
+            document.querySelector('form').addEventListener('submit', function() {
+                formModified = false;
+            });
+        });
+    </script>
+}
