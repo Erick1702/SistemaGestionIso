@@ -88,7 +88,7 @@
                             Auditoría: @ViewBag.AreaAuditada
                         </h5>
                         <p style="margin: 0; color: var(--text-primary); line-height: 1.6;">
-                            <strong>Tipo:</strong> @ViewBag.TipoAuditoria |
+                            <strong>Tipo:</strong> @ViewBag.TipoAuditoria | 
                             <strong>Periodo:</strong> @ViewBag.FechaInicioAuditoria.ToString("dd/MM/yyyy") - @ViewBag.FechaFinAuditoria.ToString("dd/MM/yyyy")
                         </p>
                     </div>
@@ -291,45 +291,8 @@
                                             </button>
                                         }
                                     </div>
-
-                                    <!-- Modal de Confirmación de Eliminación -->
-                                    @if (User.IsInRole("Administrador") || User.IsInRole("Encargado SIG"))
-                                    {
-                                        <div class="modal fade" id="deleteModal-@item.Id" tabindex="-1">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content" style="border-radius: 0.75rem; border: none;">
-                                                    <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem;">
-                                                        <h5 class="modal-title" style="color: var(--text-primary); font-weight: 600;">
-                                                            <i class="bi bi-exclamation-triangle text-warning"></i>
-                                                            Confirmar Eliminación
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <div class="modal-body" style="padding: 1.5rem;">
-                                                        <p style="margin: 0; color: var(--text-primary);">
-                                                            ¿Está seguro de que desea eliminar este hallazgo?
-                                                        </p>
-                                                        <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.875rem;">
-                                                            Esta acción no se puede deshacer.
-                                                        </p>
-                                                    </div>
-                                                    <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
-                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                                            Cancelar
-                                                        </button>
-                                                        <form asp-action="Eliminar" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                                            @Html.AntiForgeryToken()
-                                                            <button type="submit" class="btn btn-danger">
-                                                                <i class="bi bi-trash"></i>
-                                                                Eliminar
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
                                 </td>
+                               
                             </tr>
                             contador++;
                         }
@@ -368,6 +331,47 @@ else
             }
         </div>
     </div>
+}
+
+<!-- Modales de Eliminación (fuera de la tabla) -->
+@if (User.IsInRole("Administrador") || User.IsInRole("Encargado SIG"))
+{
+    @foreach (var item in Model.Hallazgos)
+    {
+        <div class="modal fade" id="deleteModal-@item.Id" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 0.75rem; border: none;">
+                    <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem;">
+                        <h5 class="modal-title" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="bi bi-exclamation-triangle text-warning"></i>
+                            Confirmar Eliminación
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="padding: 1.5rem;">
+                        <p style="margin: 0; color: var(--text-primary);">
+                            ¿Está seguro de que desea eliminar este hallazgo?
+                        </p>
+                        <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.875rem;">
+                            Esta acción no se puede deshacer.
+                        </p>
+                    </div>
+                    <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <form asp-action="Eliminar" asp-route-id="@item.Id" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i>
+                                Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @section Scripts {

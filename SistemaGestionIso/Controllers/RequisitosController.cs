@@ -194,5 +194,191 @@ namespace SistemaGestionIso.Controllers
                 return View(modelo);
             }
         }
+
+        // GET: Requisitos/Detalles/5
+        //[HttpGet]
+        //[Authorize(Roles = $"{Constantes.RolAdministrador}, {Constantes.RolEncargadoSig}")]
+        //public async Task<IActionResult> Detalles(int id)
+        //{
+        //    var requisito = await _context.Requisitos
+        //        .Include(r => r.Clausula)
+        //            .ThenInclude(c => c.NormaIso)
+        //        .Include(r => r.Cumplimientos)
+        //        .Include(r => r.Hallazgos)
+        //        .FirstOrDefaultAsync(r => r.Id == id);
+
+        //    if (requisito == null)
+        //    {
+        //        TempData["Error"] = "El requisito no existe";
+        //        return RedirectToAction(nameof(Index));
+        //    }
+
+        //    var viewModel = new RequisitoDetalleViewModel
+        //    {
+        //        Id = requisito.Id,
+        //        Descripcion = requisito.Descripcion,
+        //        ClausulaId = requisito.ClausulaId,
+        //        CodigoClausula = requisito.Clausula.Codigo,
+        //        DescripcionClausula = requisito.Clausula.Descripcion,
+        //        NombreNormaIso = $"{requisito.Clausula.NormaIso.Nombre} - {requisito.Clausula.NormaIso.Version}",
+        //        NormaIsoId = requisito.Clausula.NormaIsoId,
+        //        CantidadCumplimientos = requisito.Cumplimientos.Count,
+        //        CantidadHallazgos = requisito.Hallazgos.Count
+        //    };
+
+        //    return View(viewModel);
+        //}
+
+        // GET: Requisitos/Editar/5
+        [HttpGet]
+        [Authorize(Roles = $"{Constantes.RolAdministrador}, {Constantes.RolEncargadoSig}")]
+        public async Task<IActionResult> Editar(int id)
+        {
+            var requisito = await _context.Requisitos
+                .Include(r => r.Clausula)
+                    .ThenInclude(c => c.NormaIso)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (requisito == null)
+            {
+                TempData["Error"] = "El requisito no existe";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var viewModel = new RequisitoCrearViewModel
+            {
+                Id = requisito.Id,
+                Descripcion = requisito.Descripcion,
+                ClausulaId = requisito.ClausulaId,
+                CodigoClausula = requisito.Clausula.Codigo,
+                DescripcionClausula = requisito.Clausula.Descripcion,
+                NombreNormaIso = $"{requisito.Clausula.NormaIso.Nombre} - {requisito.Clausula.NormaIso.Version}",
+                NormaIsoId = requisito.Clausula.NormaIsoId
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Requisitos/Editar/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = $"{Constantes.RolAdministrador}, {Constantes.RolEncargadoSig}")]
+        public async Task<IActionResult> Editar(int id, RequisitoCrearViewModel modelo)
+        {
+            if (id != modelo.Id)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // Recargar información de la cláusula
+                var clausulaError = await _context.Clausulas
+                    .Include(c => c.NormaIso)
+                    .FirstOrDefaultAsync(c => c.Id == modelo.ClausulaId);
+
+                if (clausulaError != null)
+                {
+                    modelo.CodigoClausula = clausulaError.Codigo;
+                    modelo.DescripcionClausula = clausulaError.Descripcion;
+                    modelo.NombreNormaIso = $"{clausulaError.NormaIso.Nombre} - {clausulaError.NormaIso.Version}";
+                    modelo.NormaIsoId = clausulaError.NormaIsoId;
+                }
+
+                return View(modelo);
+            }
+
+            try
+            {
+                var requisito = await _context.Requisitos.FindAsync(id);
+
+                if (requisito == null)
+                {
+                    return NotFound();
+                }
+
+                requisito.Descripcion = modelo.Descripcion;
+
+                _context.Update(requisito);
+                await _context.SaveChangesAsync();
+
+                TempData["Mensaje"] = "Requisito actualizado exitosamente";
+                return RedirectToAction(nameof(Listado), new { id = requisito.ClausulaId });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!RequisitoExists(modelo.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError("", "Error al actualizar el requisito. Por favor, intente nuevamente.");
+
+                // Recargar información de la cláusula
+                var clausula = await _context.Clausulas
+                    .Include(c => c.NormaIso)
+                    .FirstOrDefaultAsync(c => c.Id == modelo.ClausulaId);
+
+                if (clausula != null)
+                {
+                    modelo.CodigoClausula = clausula.Codigo;
+                    modelo.DescripcionClausula = clausula.Descripcion;
+                    modelo.NombreNormaIso = $"{clausula.NormaIso.Nombre} - {clausula.NormaIso.Version}";
+                    modelo.NormaIsoId = clausula.NormaIsoId;
+                }
+
+                return View(modelo);
+            }
+        }
+
+        // POST: Requisitos/Eliminar/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = Constantes.RolAdministrador)]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            var requisito = await _context.Requisitos
+                .Include(r => r.Cumplimientos)
+                .Include(r => r.Hallazgos)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (requisito == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                // Verificar si tiene cumplimientos o hallazgos
+                if (requisito.Cumplimientos.Any() || requisito.Hallazgos.Any())
+                {
+                    TempData["Error"] = $"No se puede eliminar el requisito porque tiene {requisito.Cumplimientos.Count} cumplimiento(s) y {requisito.Hallazgos.Count} hallazgo(s) registrados. Elimínelos primero.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _context.Requisitos.Remove(requisito);
+                await _context.SaveChangesAsync();
+
+                TempData["Mensaje"] = "Requisito eliminado exitosamente";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "Error al eliminar el requisito. Por favor, intente nuevamente.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Método auxiliar
+        private bool RequisitoExists(int id)
+        {
+            return _context.Requisitos.Any(e => e.Id == id);
+        }
     }
 }

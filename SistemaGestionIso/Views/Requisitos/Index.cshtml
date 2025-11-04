@@ -153,7 +153,7 @@
                             <th style="width: 200px;">NORMA ISO</th>
                             <th style="width: 100px; text-align: center;">CUMPL.</th>
                             <th style="width: 100px; text-align: center;">HALLAZ.</th>
-                            <th style="width: 180px; text-align: center;">ACCIONES</th>
+                            <th style="width: 220px; text-align: center;">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -223,17 +223,31 @@
                                             <i class="bi bi-check-circle"></i>
                                         </a>
                                         <a asp-action="Detalles" asp-route-id="@item.Id"
-                                           class="btn btn-sm btn-outline-secondary"
+                                           class="btn btn-sm btn-info"
                                            title="Ver detalles"
                                            style="padding: 0.375rem 0.75rem;">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a asp-action="Editar" asp-route-id="@item.Id"
-                                           class="btn btn-sm btn-primary"
-                                           title="Editar"
-                                           style="padding: 0.375rem 0.75rem;">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
+                                        @if (User.IsInRole("Administrador") || User.IsInRole("Encargado SIG"))
+                                        {
+                                            <a asp-action="Editar" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-primary"
+                                               title="Editar"
+                                               style="padding: 0.375rem 0.75rem;">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        }
+                                        @if (User.IsInRole("Administrador"))
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-danger"
+                                                    title="Eliminar"
+                                                    style="padding: 0.375rem 0.75rem;"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal-@item.Id">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -271,6 +285,58 @@ else
             </a>
         </div>
     </div>
+}
+
+<!-- Modales de Eliminación (fuera de la tabla) -->
+@if (User.IsInRole("Administrador"))
+{
+    @foreach (var item in Model.Requisitos)
+    {
+        <div class="modal fade" id="deleteModal-@item.Id" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 0.75rem; border: none;">
+                    <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem;">
+                        <h5 class="modal-title" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="bi bi-exclamation-triangle text-warning"></i>
+                            Confirmar Eliminación
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="padding: 1.5rem;">
+                        <p style="margin: 0; color: var(--text-primary);">
+                            ¿Está seguro de que desea eliminar este requisito?
+                        </p>
+                        @if (item.CantidadCumplimientos > 0 || item.CantidadHallazgos > 0)
+                        {
+                            <div class="alert alert-warning" style="margin-top: 1rem; margin-bottom: 0; background-color: rgba(255, 159, 67, 0.12); border-color: var(--warning); color: var(--warning);">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Este requisito tiene <strong>@item.CantidadCumplimientos cumplimiento(s)</strong> y
+                                <strong>@item.CantidadHallazgos hallazgo(s)</strong> registrados. Debe eliminarlos primero.
+                            </div>
+                        }
+                        else
+                        {
+                            <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.875rem;">
+                                Esta acción no se puede deshacer.
+                            </p>
+                        }
+                    </div>
+                    <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <form asp-action="Eliminar" asp-route-id="@item.Id" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger" @((item.CantidadCumplimientos > 0 || item.CantidadHallazgos > 0) ? "disabled" : "")>
+                                <i class="bi bi-trash"></i>
+                                Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @section Scripts {

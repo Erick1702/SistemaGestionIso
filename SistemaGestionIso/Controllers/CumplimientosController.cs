@@ -430,5 +430,8 @@ namespace SistemaGestionIso.Controllers
             return _context.Cumplimientos.Any(e => e.Id == id);
         }
 
+
+        
+
     }
 }
