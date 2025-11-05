@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models
+namespace SistemaGestionIso.Models.NormasIso
 {
     public class NormaIsoCrearViewModel
     {
@@ -8,6 +8,6 @@ namespace SistemaGestionIso.Models
         public required string Nombre { get; set; }
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public required string Version { get; set; }
-        public string? Descripcion { get; set; }
+        public string Descripcion { get; set; }
     }
 }

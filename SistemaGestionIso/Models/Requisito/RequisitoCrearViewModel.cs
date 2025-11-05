@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models
+namespace SistemaGestionIso.Models.Requisitos
 {
     public class RequisitoCrearViewModel
     {
@@ -9,16 +9,16 @@ namespace SistemaGestionIso.Models
         [Display(Name = "Cláusula")]
         public int ClausulaId { get; set; }
 
-        public string? CodigoClausula { get; set; }
+        public string CodigoClausula { get; set; }
         [Required(ErrorMessage = "La descripción es obligatoria")]
         [StringLength(550, ErrorMessage = "La descripción no puede exceder {1} caracteres")]
         [Display(Name = "Descripción del Requisito")]
-        public string? Descripcion { get; set; }
+        public string Descripcion { get; set; }
 
 
-        public string? DescripcionClausula { get; set; }
+        public string DescripcionClausula { get; set; }
 
-        public string? NombreNormaIso { get; set; }
+        public string NombreNormaIso { get; set; }
 
         public int? NormaIsoId { get; set; }
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaGestionIso.Entidades;
 using SistemaGestionIso.Models;
+using SistemaGestionIso.Models.Clausulas;
 using SistemaGestionIso.Servicios;
 
 namespace SistemaGestionIso.Controllers

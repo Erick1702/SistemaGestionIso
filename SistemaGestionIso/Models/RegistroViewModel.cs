@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models
+namespace SistemaGestionIso.Models.Requisitos
 {
     public class RegistroViewModel
     {
@@ -12,7 +12,7 @@ namespace SistemaGestionIso.Models
         
         //[DisplayName("Segundo Nombre")]
         //[StringLength(maximumLength: 150, MinimumLength = 0, ErrorMessage = "La longuitud del {0}  campo entre {2} y {1}")]
-        public string? SegundoNombre { get; set; }
+        public string SegundoNombre { get; set; }
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [DisplayName("Apellido Paterno")]
         [StringLength(maximumLength: 150, MinimumLength = 1, ErrorMessage = "La longuitud del {0}  campo entre {2} y {1}")]
@@ -21,7 +21,7 @@ namespace SistemaGestionIso.Models
         [DisplayName("Apellido Materno")]
         [StringLength(maximumLength: 150, MinimumLength = 1, ErrorMessage = "La longuitud del {0}  campo entre {2} y {1}")]
         public string SegundoApellido { get; set; }
-        public string? Celular { get; set; }
+        public string Celular { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [EmailAddress(ErrorMessage = "El campo {0} debe ser un correo electrónico válido.")]

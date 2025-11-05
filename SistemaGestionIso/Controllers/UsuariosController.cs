@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaGestionIso.Entidades;
 using SistemaGestionIso.Models;
+using SistemaGestionIso.Models.Requisitos;
 using SistemaGestionIso.Servicios;
 
 namespace SistemaGestionIso.Controllers

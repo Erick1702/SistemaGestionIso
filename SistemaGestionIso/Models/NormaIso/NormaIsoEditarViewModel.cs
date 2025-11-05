@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models
+namespace SistemaGestionIso.Models.NormasIso
 {
     public class NormaIsoEditarViewModel
     {
@@ -11,6 +11,6 @@ namespace SistemaGestionIso.Models
         [StringLength(50)]
         [Required]
         public string Version { get; set; }
-        public string? Descripcion { get; set; }
+        public string Descripcion { get; set; }
     }
 }

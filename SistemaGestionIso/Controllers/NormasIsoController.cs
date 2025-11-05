@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.SqlServer.Server;
 using SistemaGestionIso.Entidades;
 using SistemaGestionIso.Models;
+using SistemaGestionIso.Models.NormasIso;
 using SistemaGestionIso.Servicios;
 
 
