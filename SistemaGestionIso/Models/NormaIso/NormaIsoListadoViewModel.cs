@@ -1,4 +1,4 @@
-﻿namespace SistemaGestionIso.Models.NormasIso
+﻿namespace SistemaGestionIso.Models.NormaIso
 {
     public class NormaIsoListadoViewModel
     {

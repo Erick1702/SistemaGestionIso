@@ -1,14 +1,13 @@
-﻿using SistemaGestionIso.Entidades;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models.Requisitos
+namespace SistemaGestionIso.Models.Requisito
 {
     public class RequisitoViewModel
     {
         public int Id { get; set; }
 
         public int ClausulaId { get; set; }
-        public Clausula Clausula { get; set; }
+        //public Clausula Clausula { get; set; }
         [StringLength(50)]
         public string CodigoClausula { get; set; }
         [StringLength(550)]

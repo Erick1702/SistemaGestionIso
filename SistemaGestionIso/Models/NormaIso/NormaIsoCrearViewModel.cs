@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models.NormasIso
+namespace SistemaGestionIso.Models.NormaIso
 {
     public class NormaIsoCrearViewModel
     {

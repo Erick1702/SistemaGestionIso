@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models.Requisitos
+namespace SistemaGestionIso.Models
 {
     public class RegistroViewModel
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models.Requisitos
+namespace SistemaGestionIso.Models.Requisito
 {
     public class RequisitoCrearViewModel
     {

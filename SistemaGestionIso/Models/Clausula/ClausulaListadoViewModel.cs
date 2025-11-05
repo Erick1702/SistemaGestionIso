@@ -1,4 +1,4 @@
-﻿namespace SistemaGestionIso.Models.Clausulas
+﻿namespace SistemaGestionIso.Models.Clausula
 {
     public class ClausulaListadoViewModel
     {

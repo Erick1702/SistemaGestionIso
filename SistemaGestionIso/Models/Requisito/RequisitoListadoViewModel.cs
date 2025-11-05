@@ -1,4 +1,4 @@
-﻿namespace SistemaGestionIso.Models.Requisitos
+﻿namespace SistemaGestionIso.Models.Requisito
 {
     public class RequisitoListadoViewModel
     {

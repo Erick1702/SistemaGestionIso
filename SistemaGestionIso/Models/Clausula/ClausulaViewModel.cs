@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SistemaGestionIso.Models.Clausulas
+namespace SistemaGestionIso.Models.Clausula
 {
     public class ClausulaViewModel
     {
