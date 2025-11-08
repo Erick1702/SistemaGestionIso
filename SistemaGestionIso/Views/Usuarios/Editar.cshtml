@@ -1,0 +1,205 @@
+﻿@model EditarUsuarioViewModel
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    <i class="bi bi-person-gear text-primary"></i>
+                    Editar Usuario
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Modifica la información del usuario
+                </p>
+            </div>
+            <div>
+                <a asp-action="Listado" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver al Listado
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="row">
+    <div class="col-lg-8 col-xl-6 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person-badge"></i>
+                    Información del Usuario
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Editar" method="post">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Nombres -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="PrimerNombre" class="form-label"></label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="PrimerNombre" class="form-control" placeholder="Ingrese el primer nombre" />
+                            </div>
+                            <span asp-validation-for="PrimerNombre" class="invalid-feedback d-block"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SegundoNombre" class="form-label"></label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="SegundoNombre" class="form-control" placeholder="Ingrese el segundo nombre (opcional)" />
+                            </div>
+                            <span asp-validation-for="SegundoNombre" class="invalid-feedback d-block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Apellidos -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="PrimerApellido" class="form-label"></label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="PrimerApellido" class="form-control" placeholder="Ingrese el primer apellido" />
+                            </div>
+                            <span asp-validation-for="PrimerApellido" class="invalid-feedback d-block"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SegundoApellido" class="form-label"></label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="SegundoApellido" class="form-control" placeholder="Ingrese el segundo apellido (opcional)" />
+                            </div>
+                            <span asp-validation-for="SegundoApellido" class="invalid-feedback d-block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <div class="auth-input-group">
+                            <i class="bi bi-envelope"></i>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="correo@ejemplo.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="invalid-feedback d-block"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i>
+                            El email también se utiliza como nombre de usuario
+                        </small>
+                    </div>
+
+                    <!-- Celular -->
+                    <div class="mb-3">
+                        <label asp-for="Celular" class="form-label"></label>
+                        <div class="auth-input-group">
+                            <i class="bi bi-phone"></i>
+                            <input asp-for="Celular" type="tel" class="form-control" placeholder="+51 999 999 999" />
+                        </div>
+                        <span asp-validation-for="Celular" class="invalid-feedback d-block"></span>
+                    </div>
+
+                    <!-- Alert Info -->
+                    <div class="alert alert-info" style="background-color: rgba(0, 207, 232, 0.12); border-color: var(--info); color: var(--info);">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Nota:</strong> Para cambiar la contraseña del usuario, utilice la opción "Restablecer Contraseña" desde el listado de usuarios.
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2 justify-content-end mt-4">
+                        <a asp-action="Listado" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Additional Actions Card -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-shield-lock"></i>
+                    Acciones Adicionales
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3" style="border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <h6 class="mb-1" style="font-weight: 600; color: var(--text-primary);">
+                            <i class="bi bi-person-badge text-primary"></i>
+                            Gestionar Roles
+                        </h6>
+                        <p class="mb-0" style="font-size: 0.875rem; color: var(--text-muted);">
+                            Asignar o modificar los roles del usuario
+                        </p>
+                    </div>
+                    <a asp-action="RolesUsuario" asp-route-usuarioId="@Model.Id" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-gear"></i>
+                        Editar Roles
+                    </a>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1" style="font-weight: 600; color: var(--text-primary);">
+                            <i class="bi bi-key text-warning"></i>
+                            Restablecer Contraseña
+                        </h6>
+                        <p class="mb-0" style="font-size: 0.875rem; color: var(--text-muted);">
+                            Enviar un enlace de restablecimiento de contraseña
+                        </p>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
+                        <i class="bi bi-envelope"></i>
+                        Próximamente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Auto-dismiss validation errors on input
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('input', function() {
+                const feedback = this.parentElement.nextElementSibling;
+                if (feedback && feedback.classList.contains('invalid-feedback')) {
+                    feedback.style.display = 'none';
+                }
+            });
+        });
+
+        // Format phone input
+        const phoneInput = document.querySelector('input[name="Celular"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    if (!value.startsWith('51')) {
+                        value = '51' + value;
+                    }
+                    value = '+' + value;
+                }
+                e.target.value = value;
+            });
+        }
+    </script>
+}

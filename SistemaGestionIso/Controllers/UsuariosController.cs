@@ -176,5 +176,82 @@ namespace SistemaGestionIso.Controllers
             return RedirectToAction("Listado", new { mensaje });
         }
 
+        [HttpGet]
+        //[Authorize(Roles = Constantes.RolAdministrador)]
+        public async Task<IActionResult> Editar(string id)
+        {
+            var usuario = await userManager.FindByIdAsync(id);
+
+            if (usuario is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            var modelo = new EditarUsuarioViewModel
+            {
+                Id = usuario.Id,
+                Email = usuario.Email!,
+                PrimerNombre = usuario.PrimerNombre,
+                SegundoNombre = usuario.SegundoNombre,
+                PrimerApellido = usuario.PrimerApellido,
+                SegundoApellido = usuario.SegundoApellido,
+                Celular = usuario.Celular
+            };
+
+            return View(modelo);
+        }
+
+        [HttpPost]
+        //[Authorize(Roles = Constantes.RolAdministrador)]
+        public async Task<IActionResult> Editar(EditarUsuarioViewModel modelo)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(modelo);
+            }
+
+            var usuario = await userManager.FindByIdAsync(modelo.Id);
+
+            if (usuario is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            // Verificar si el email cambió y si ya existe
+            if (usuario.Email != modelo.Email)
+            {
+                var emailExiste = await userManager.FindByEmailAsync(modelo.Email);
+                if (emailExiste != null)
+                {
+                    ModelState.AddModelError("Email", "Este correo electrónico ya está registrado.");
+                    return View(modelo);
+                }
+                usuario.Email = modelo.Email;
+                usuario.UserName = modelo.Email;
+            }
+
+            usuario.PrimerNombre = modelo.PrimerNombre;
+            usuario.SegundoNombre = modelo.SegundoNombre;
+            usuario.PrimerApellido = modelo.PrimerApellido;
+            usuario.SegundoApellido = modelo.SegundoApellido;
+            usuario.Celular = modelo.Celular;
+
+            var resultado = await userManager.UpdateAsync(usuario);
+
+            if (resultado.Succeeded)
+            {
+                var mensaje = $"El usuario {usuario.Email} ha sido actualizado exitosamente.";
+                return RedirectToAction("Listado", new { mensaje });
+            }
+            else
+            {
+                foreach (var error in resultado.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(modelo);
+            }
+        }
+
     }
 }
