@@ -1,0 +1,420 @@
+﻿@using SistemaGestionIso.Models.Cumplimiento
+@model CumplimientoCrearEditarViewModel
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Registrar Cumplimiento" : "Editar Cumplimiento";
+    var isEdit = Model.Id != 0;
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: transparent; padding: 0; margin-bottom: 1rem;">
+                <li class="breadcrumb-item">
+                    <a asp-controller="NormasIso" asp-action="Index" style="color: var(--primary); text-decoration: none;">
+                        <i class="bi bi-journal-text"></i> Normas ISO
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Clausulas" asp-action="Listado" asp-route-id="@Model.NormaIsoId" style="color: var(--primary); text-decoration: none;">
+                        Cláusulas
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Requisitos" asp-action="Listado" asp-route-id="@Model.ClausulaId" style="color: var(--primary); text-decoration: none;">
+                        Requisitos
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-action="Listado" asp-route-id="@Model.RequisitoId" style="color: var(--primary); text-decoration: none;">
+                        Cumplimientos
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" style="color: var(--text-muted);">
+                    @ViewData["Title"]
+                </li>
+            </ol>
+        </nav>
+        <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+            @if (isEdit)
+            {
+                <i class="bi bi-pencil-square text-primary"></i>
+                <text>Editar Evaluación de Cumplimiento</text>
+            }
+            else
+            {
+                <i class="bi bi-plus-circle text-success"></i>
+                <text>Registrar Nueva Evaluación</text>
+            }
+        </h4>
+        <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+            Norma ISO: <strong>@Model.NombreNormaIso</strong> | Cláusula: <strong>@Model.CodigoClausula</strong>
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Formulario Principal -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clipboard-data text-primary"></i>
+                    Información de la Evaluación
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="@(isEdit ? "Editar" : "Crear")" method="post" id="cumplimientoForm">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Id)
+                    @Html.HiddenFor(m => m.RequisitoId)
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row">
+                        <!-- Estado de Cumplimiento -->
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Estado" class="form-label">
+                                Estado de Cumplimiento
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Estado" class="form-select" id="estadoSelect">
+                                <option value="">Seleccione un estado...</option>
+                                <option value="0">✓ Cumple</option>
+                                <option value="1">⚠ Cumple Parcialmente</option>
+                                <option value="2">✗ No Cumple</option>
+                            </select>
+                            <span asp-validation-for="Estado" class="invalid-feedback"></span>
+                        </div>
+
+                        <!-- Fecha de Evaluación -->
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Fecha" class="form-label">
+                                Fecha de Evaluación
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: var(--body-bg); border-right: 0;">
+                                    <i class="bi bi-calendar-event"></i>
+                                </span>
+                                <input asp-for="Fecha"
+                                       type="date"
+                                       class="form-control"
+                                       style="border-left: 0;"
+                                       max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <span asp-validation-for="Fecha" class="invalid-feedback"></span>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                Fecha en que se realizó la evaluación
+                            </small>
+                        </div>
+
+                        <!-- Usuario Responsable -->
+                        <div class="col-12 mb-3">
+                            <label asp-for="UsuarioResponsableId" class="form-label">
+                                Usuario Responsable
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: var(--body-bg); border-right: 0;">
+                                    <i class="bi bi-person-circle"></i>
+                                </span>
+                                <select asp-for="UsuarioResponsableId"
+                                        asp-items="ViewBag.Usuarios"
+                                        class="form-select"
+                                        style="border-left: 0;">
+                                    <option value="">Seleccione un usuario...</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="UsuarioResponsableId" class="invalid-feedback"></span>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                Usuario encargado de la evaluación
+                            </small>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="col-12 mb-3">
+                            <label asp-for="Observaciones" class="form-label">
+                                Observaciones
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text align-items-start pt-2" style="background-color: var(--body-bg); border-right: 0;">
+                                    <i class="bi bi-chat-left-text"></i>
+                                </span>
+                                <textarea asp-for="Observaciones"
+                                          class="form-control"
+                                          rows="6"
+                                          placeholder="Ingrese observaciones detalladas sobre la evaluación..."
+                                          maxlength="1000"
+                                          style="border-left: 0;"
+                                          id="observacionesTextarea"></textarea>
+                            </div>
+                            <span asp-validation-for="Observaciones" class="invalid-feedback"></span>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i>
+                                    Describa el estado del cumplimiento y cualquier hallazgo relevante
+                                </small>
+                                <small class="text-muted">
+                                    <span id="charCount">0</span>/1000
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de Requisito (Solo lectura) -->
+                    <div class="alert alert-info d-flex align-items-start gap-3" style="background-color: rgba(0, 207, 232, 0.08); border-color: var(--info);">
+                        <i class="bi bi-info-circle" style="font-size: 1.25rem; color: var(--info);"></i>
+                        <div style="flex: 1;">
+                            <strong style="color: var(--info);">Requisito Evaluado:</strong>
+                            <p style="margin: 0.25rem 0 0 0; color: var(--text-primary); line-height: 1.6;">
+                                @Model.DescripcionRequisito
+                            </p>
+                            <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.875rem;">
+                                Cláusula: <strong>@Model.CodigoClausula</strong> | Norma: <strong>@Model.NombreNormaIso</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 justify-content-end mt-4 pt-3" style="border-top: 1px solid var(--border-color);">
+                        <a asp-action="Listado" asp-route-id="@Model.RequisitoId" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </a>
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            Limpiar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            @(isEdit ? "Actualizar Evaluación" : "Registrar Evaluación")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Lateral de Ayuda -->
+    <div class="col-lg-4">
+        <!-- Card de Guía de Estados -->
+        <div class="card mb-4">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(115, 103, 240, 0.08) 0%, rgba(158, 149, 245, 0.08) 100%);">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i>
+                    Guía de Estados
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div style="display: flex; gap: 0.75rem; align-items: start;">
+                        <div style="width: 32px; height: 32px; background: rgba(40, 199, 111, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-check-circle" style="color: var(--success);"></i>
+                        </div>
+                        <div>
+                            <h6 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0; color: var(--success);">
+                                Cumple
+                            </h6>
+                            <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                                El requisito se cumple completamente según lo establecido en la norma ISO
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div style="display: flex; gap: 0.75rem; align-items: start;">
+                        <div style="width: 32px; height: 32px; background: rgba(255, 159, 67, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-exclamation-circle" style="color: var(--warning);"></i>
+                        </div>
+                        <div>
+                            <h6 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0; color: var(--warning);">
+                                Cumple Parcialmente
+                            </h6>
+                            <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                                El requisito se cumple pero con algunas deficiencias o áreas de mejora identificadas
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; gap: 0.75rem; align-items: start;">
+                        <div style="width: 32px; height: 32px; background: rgba(234, 84, 85, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-x-circle" style="color: var(--danger);"></i>
+                        </div>
+                        <div>
+                            <h6 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0; color: var(--danger);">
+                                No Cumple
+                            </h6>
+                            <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                                El requisito no se cumple y requiere acciones correctivas inmediatas
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Consejos -->
+        <div class="card mb-4">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(40, 199, 111, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle text-success"></i>
+                    Consejos para Evaluar
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul style="padding-left: 1.25rem; margin: 0; color: var(--text-primary); font-size: 0.8125rem; line-height: 1.8;">
+                    <li>Revise la documentación relacionada con el requisito</li>
+                    <li>Verifique la implementación práctica</li>
+                    <li>Documente hallazgos específicos en las observaciones</li>
+                    <li>Sea objetivo y base su evaluación en evidencias</li>
+                    <li>Adjunte evidencias documentales cuando sea posible</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Card de Contexto -->
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(0, 207, 232, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bookmark text-info"></i>
+                    Contexto de la Evaluación
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Norma ISO</label>
+                    <p style="font-size: 0.875rem; color: var(--text-primary); margin: 0.25rem 0 0 0; font-weight: 600;">
+                        @Model.NombreNormaIso
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Cláusula</label>
+                    <p style="font-size: 0.875rem; color: var(--text-primary); margin: 0.25rem 0 0 0;">
+                        <span class="badge badge-primary" style="font-size: 0.8125rem; padding: 0.375rem 0.625rem;">
+                            @Model.CodigoClausula
+                        </span>
+                    </p>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Requisito</label>
+                    <p style="font-size: 0.8125rem; color: var(--text-primary); margin: 0.25rem 0 0 0; line-height: 1.5;">
+                        @Model.DescripcionRequisito
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Contador de caracteres
+        const textarea = document.getElementById('observacionesTextarea');
+        const charCount = document.getElementById('charCount');
+
+        if (textarea && charCount) {
+            // Inicializar contador
+            charCount.textContent = textarea.value.length;
+
+            // Actualizar al escribir
+            textarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = length;
+
+                // Cambiar color si se acerca al límite
+                if (length > 900) {
+                    charCount.style.color = 'var(--warning)';
+                } else if (length === 1000) {
+                    charCount.style.color = 'var(--danger)';
+                } else {
+                    charCount.style.color = 'var(--text-muted)';
+                }
+            });
+        }
+
+        // Cambiar color del select según el estado seleccionado
+        const estadoSelect = document.getElementById('estadoSelect');
+        if (estadoSelect) {
+            estadoSelect.addEventListener('change', function() {
+                const value = this.value;
+
+                // Remover clases previas
+                this.classList.remove('border-success', 'border-warning', 'border-danger');
+
+                // Agregar clase según el estado
+                if (value === '0') { // Cumple
+                    this.classList.add('border-success');
+                    this.style.borderWidth = '2px';
+                } else if (value === '1') { // Parcial
+                    this.classList.add('border-warning');
+                    this.style.borderWidth = '2px';
+                } else if (value === '2') { // No Cumple
+                    this.classList.add('border-danger');
+                    this.style.borderWidth = '2px';
+                } else {
+                    this.style.borderWidth = '1px';
+                }
+            });
+
+            // Trigger al cargar si hay un valor
+            if (estadoSelect.value) {
+                estadoSelect.dispatchEvent(new Event('change'));
+            }
+        }
+
+        // Auto focus en el select de estado
+        document.addEventListener('DOMContentLoaded', function() {
+            estadoSelect?.focus();
+        });
+
+        // Confirmación antes de salir si hay cambios sin guardar
+        let formModified = false;
+
+        const formInputs = document.querySelectorAll('#cumplimientoForm input, #cumplimientoForm select, #cumplimientoForm textarea');
+        formInputs.forEach(input => {
+            const originalValue = input.value;
+            input.addEventListener('input', function() {
+                formModified = this.value !== originalValue;
+            });
+        });
+
+        document.querySelector('#cumplimientoForm')?.addEventListener('submit', function() {
+            formModified = false;
+        });
+
+        window.addEventListener('beforeunload', function(e) {
+            if (formModified) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Validación adicional de fecha
+        const fechaInput = document.querySelector('input[type="date"]');
+        if (fechaInput) {
+            fechaInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (selectedDate > today) {
+                    alert('La fecha de evaluación no puede ser futura');
+                    this.value = '';
+                }
+            });
+        }
+    </script>
+}
