@@ -65,6 +65,62 @@ namespace SistemaGestionIso.Controllers
             }
         }
 
+        [HttpGet]
+        //[Authorize(Roles = Constantes.RolAdministrador)]
+        public IActionResult Crear()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        //[Authorize(Roles = Constantes.RolAdministrador)]
+        public async Task<IActionResult> Crear(RegistroViewModel modelo)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(modelo);
+            }
+
+            // Verificar si el email ya existe
+            var usuarioExistente = await userManager.FindByEmailAsync(modelo.Email);
+            if (usuarioExistente != null)
+            {
+                ModelState.AddModelError("Email", "Este correo electrónico ya está registrado.");
+                return View(modelo);
+            }
+
+            var usuario = new Usuario
+            {
+                PrimerNombre = modelo.PrimerNombre,
+                SegundoNombre = modelo.SegundoNombre,
+                PrimerApellido = modelo.PrimerApellido,
+                SegundoApellido = modelo.SegundoApellido,
+                UserName = modelo.Email,
+                Email = modelo.Email,
+                Celular = modelo.Celular,
+                EmailConfirmed = true // El administrador crea usuarios ya confirmados
+            };
+
+            var resultado = await userManager.CreateAsync(usuario, password: modelo.Password);
+
+            if (resultado.Succeeded)
+            {
+                // Asignar rol por defecto
+                await userManager.AddToRoleAsync(usuario, Constantes.RolUsuarioEstandar);
+
+                var mensaje = $"El usuario {usuario.Email} ha sido creado exitosamente.";
+                return RedirectToAction("Listado", new { mensaje });
+            }
+            else
+            {
+                foreach (var error in resultado.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(modelo);
+            }
+        }
 
         [AllowAnonymous]
         public IActionResult Login( string? mensaje = null)

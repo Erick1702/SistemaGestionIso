@@ -1,0 +1,320 @@
+﻿@model RegistroViewModel
+
+@{
+    ViewData["Title"] = "Crear Nuevo Usuario";
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                    <i class="bi bi-person-plus-fill text-primary"></i>
+                    Crear Nuevo Usuario
+                </h4>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.875rem;">
+                    Complete la información del nuevo usuario del sistema
+                </p>
+            </div>
+            <div>
+                <a asp-action="Listado" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver al Listado
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="row">
+    <div class="col-lg-10 col-xl-8 mx-auto">
+        <form asp-action="Crear" method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person-badge"></i>
+                        Información Personal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Nombres -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="PrimerNombre" class="form-label">
+                                <i class="bi bi-asterisk text-danger" style="font-size: 0.5rem; vertical-align: super;"></i>
+                            </label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="PrimerNombre" class="form-control" placeholder="Ingrese el primer nombre" autofocus />
+                            </div>
+                            <span asp-validation-for="PrimerNombre" class="invalid-feedback d-block"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SegundoNombre" class="form-label"></label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="SegundoNombre" class="form-control" placeholder="Ingrese el segundo nombre (opcional)" />
+                            </div>
+                            <span asp-validation-for="SegundoNombre" class="invalid-feedback d-block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Apellidos -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="PrimerApellido" class="form-label">
+                                <i class="bi bi-asterisk text-danger" style="font-size: 0.5rem; vertical-align: super;"></i>
+                            </label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="PrimerApellido" class="form-control" placeholder="Ingrese el primer apellido" />
+                            </div>
+                            <span asp-validation-for="PrimerApellido" class="invalid-feedback d-block"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SegundoApellido" class="form-label"></label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-person"></i>
+                                <input asp-for="SegundoApellido" class="form-control" placeholder="Ingrese el segundo apellido (opcional)" />
+                            </div>
+                            <span asp-validation-for="SegundoApellido" class="invalid-feedback d-block"></span>
+                        </div>
+                    </div>
+
+                    <div class="divider">
+                        <span>Información de Contacto</span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">
+                            <i class="bi bi-asterisk text-danger" style="font-size: 0.5rem; vertical-align: super;"></i>
+                        </label>
+                        <div class="auth-input-group">
+                            <i class="bi bi-envelope"></i>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="correo@ejemplo.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="invalid-feedback d-block"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i>
+                            El email se utilizará como nombre de usuario para iniciar sesión
+                        </small>
+                    </div>
+
+                    <!-- Celular -->
+                    <div class="mb-3">
+                        <label asp-for="Celular" class="form-label">
+                            <i class="bi bi-asterisk text-danger" style="font-size: 0.5rem; vertical-align: super;"></i>
+                        </label>
+                        <div class="auth-input-group">
+                            <i class="bi bi-phone"></i>
+                            <input asp-for="Celular" type="tel" class="form-control" placeholder="+51 999 999 999" />
+                        </div>
+                        <span asp-validation-for="Celular" class="invalid-feedback d-block"></span>
+                    </div>
+
+                    <div class="divider">
+                        <span>Credenciales de Acceso</span>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Password" class="form-label">
+                                <i class="bi bi-asterisk text-danger" style="font-size: 0.5rem; vertical-align: super;"></i>
+                            </label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-lock"></i>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Mínimo 8 caracteres" id="password" />
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="bi bi-eye" id="password-icon"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Password" class="invalid-feedback d-block"></span>
+                            
+                            <!-- Password Strength Indicator -->
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="strength-bar">
+                                    <div class="strength-bar-fill" id="strengthBar"></div>
+                                </div>
+                                <small class="strength-text" id="strengthText"></small>
+                            </div>
+                        </div>
+                        @* <div class="col-md-6">
+                            <label asp-for="ConfirmPassword" class="form-label">
+                                <i class="bi bi-asterisk text-danger" style="font-size: 0.5rem; vertical-align: super;"></i>
+                            </label>
+                            <div class="auth-input-group">
+                                <i class="bi bi-lock-fill"></i>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Repita la contraseña" id="confirmPassword" />
+                                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                    <i class="bi bi-eye" id="confirmPassword-icon"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="invalid-feedback d-block"></span>
+                        </div> *@
+                    </div>
+
+                    <!-- Password Requirements -->
+                    @* <div class="alert alert-info" style="background-color: rgba(0, 207, 232, 0.12); border-color: var(--info); color: var(--info);">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">
+                            <i class="bi bi-shield-check"></i>
+                            Requisitos de la contraseña:
+                        </div>
+                        <ul style="margin: 0; padding-left: 1.5rem; font-size: 0.875rem;">
+                            <li>Mínimo 8 caracteres</li>
+                            <li>Al menos una letra mayúscula</li>
+                            <li>Al menos una letra minúscula</li>
+                            <li>Al menos un número</li>
+                            <li>Al menos un carácter especial (!@#$%^&*)</li>
+                        </ul>
+                    </div> *@
+                </div>
+
+                <div class="card-footer" style="background-color: var(--body-bg); border-top: 1px solid var(--border-color);">
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a asp-action="Listado" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            Crear Usuario
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role Assignment Card -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-shield-lock"></i>
+                        Información de Rol
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success" style="background-color: rgba(40, 199, 111, 0.12); border-color: var(--success); color: var(--success); margin: 0;">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Nota:</strong> El usuario será creado con el rol de <strong>"Usuario Estándar"</strong> por defecto. 
+                        Puede modificar los roles desde la opción "Editar Roles" en el listado de usuarios.
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Toggle password visibility
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(inputId + '-icon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+
+        // Password strength checker
+        const passwordInput = document.getElementById('password');
+        const strengthIndicator = document.getElementById('passwordStrength');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            
+            if (password.length === 0) {
+                strengthIndicator.classList.remove('show');
+                return;
+            }
+            
+            strengthIndicator.classList.add('show');
+            
+            let strength = 0;
+            
+            // Criterios de fortaleza
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/)) strength++;
+            if (password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            
+            // Actualizar indicador
+            strengthBar.className = 'strength-bar-fill';
+            
+            if (strength <= 2) {
+                strengthBar.classList.add('weak');
+                strengthText.textContent = 'Contraseña débil';
+                strengthText.style.color = 'var(--danger)';
+            } else if (strength <= 4) {
+                strengthBar.classList.add('medium');
+                strengthText.textContent = 'Contraseña media';
+                strengthText.style.color = 'var(--warning)';
+            } else {
+                strengthBar.classList.add('strong');
+                strengthText.textContent = 'Contraseña fuerte';
+                strengthText.style.color = 'var(--success)';
+            }
+        });
+
+        // Auto-dismiss validation errors on input
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('input', function() {
+                const feedback = this.parentElement.nextElementSibling;
+                if (feedback && feedback.classList.contains('invalid-feedback')) {
+                    feedback.style.display = 'none';
+                }
+            });
+        });
+
+        // Format phone input
+        const phoneInput = document.querySelector('input[name="Celular"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('blur', function() {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 0 && !value.startsWith('51')) {
+                    if (value.startsWith('9') && value.length === 9) {
+                        value = '51' + value;
+                    }
+                }
+                if (value.length > 0) {
+                    this.value = '+' + value;
+                }
+            });
+        }
+
+        // Confirm password match indicator
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        confirmPasswordInput.addEventListener('input', function() {
+            const password = passwordInput.value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword.length > 0) {
+                if (password === confirmPassword) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            } else {
+                this.classList.remove('is-valid', 'is-invalid');
+            }
+        });
+    </script>
+}
